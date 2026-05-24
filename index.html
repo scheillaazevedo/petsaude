@@ -1,0 +1,4354 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PetSaúde — A ficha oficial da saúde do seu animal</title>
+
+  <!-- Google Fonts: DM Sans + DM Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet" />
+
+  <!-- Tabler Icons CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+
+  <style>
+    /* ============================================================
+       TOKENS DE COR — edita aqui para ajustar toda a interface
+       ============================================================ */
+    :root {
+      /* Fundos */
+      --color-bg-page:        #F2F3F7;   /* cinza muito claro da página */
+      --color-bg-card:        #FFFFFF;   /* branco dos cards e formulários */
+      --color-bg-input:       #F7F8FA;   /* fundo dos inputs (off-white suave) */
+      --color-bg-input-focus: #FFFFFF;   /* fundo do input em foco */
+
+      /* Cor de destaque principal */
+      --color-accent:         #5BBB2F;   /* verde principal */
+      --color-accent-hover:   #4DA827;   /* verde escuro no hover */
+      --color-accent-light:   #EAF8DC;   /* verde muito claro (badges, fundos activos) */
+      --color-accent-border:  #A2E071;   /* verde claro para bordas activas */
+
+      /* Texto */
+      --color-text-primary:   #1A1A1A;   /* título, texto principal */
+      --color-text-secondary: #6B7280;   /* subtítulo, labels, placeholder */
+      --color-text-inverse:   #FFFFFF;   /* texto sobre fundo verde */
+
+      /* Bordas e sombras */
+      --color-border:         #E4E6EC;   /* bordas de inputs e divisores */
+      --color-border-focus:   #5BBB2F;   /* borda verde em foco */
+      --shadow-card:  0 4px 24px rgba(0,0,0,0.07), 0 1px 4px rgba(0,0,0,0.04);
+      --shadow-nav:   0 1px 0 var(--color-border);
+
+      /* Raios de borda */
+      --radius-card:  20px;
+      --radius-input: 12px;
+      --radius-btn:   12px;
+      --radius-badge: 8px;
+    }
+
+    /* ============================================================
+       RESET E BASE
+       ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background-color: var(--color-bg-page);
+      color: var(--color-text-primary);
+      min-height: 100vh;
+    }
+
+    /* ============================================================
+       UTILITÁRIOS DE LAYOUT
+       ============================================================ */
+    .container {
+      width: 100%;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 28px;
+    }
+
+    /* ============================================================
+       COMPONENTE: LOGÓTIPO (reutilizável)
+       ============================================================ */
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .logo__icon-wrap {
+      width: 36px;
+      height: 36px;
+      background-color: var(--color-accent-light);
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .logo__icon-wrap .ti {
+      font-size: 20px;
+      color: var(--color-accent);
+    }
+
+    .logo__wordmark {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--color-accent);
+      letter-spacing: -0.4px;
+    }
+
+    .logo__wordmark span {
+      color: var(--color-text-primary);
+    }
+
+    /* ============================================================
+       COMPONENTE: BOTÃO PRIMÁRIO (verde, bloco)
+       ============================================================ */
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 24px;
+      background-color: var(--color-accent);
+      border: none;
+      border-radius: var(--radius-btn);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--color-text-inverse);
+      letter-spacing: 0.1px;
+      cursor: pointer;
+      transition: background-color 0.18s ease, transform 0.12s ease, box-shadow 0.18s ease;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--color-accent-hover);
+      box-shadow: 0 4px 16px rgba(91,187,47,0.30);
+    }
+
+    .btn-primary:active { transform: scale(0.98); }
+    .btn-primary .ti { font-size: 18px; }
+
+    /* Variante: largura total (dentro de formulários) */
+    .btn-primary--full { width: 100%; margin-top: 6px; }
+
+    /* ============================================================
+       COMPONENTE: BOTÃO SECUNDÁRIO (outline verde)
+       ============================================================ */
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 13px 24px;
+      background-color: transparent;
+      border: 1.5px solid var(--color-accent);
+      border-radius: var(--radius-btn);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--color-accent);
+      cursor: pointer;
+      transition: background-color 0.18s ease, transform 0.12s ease;
+      text-decoration: none;
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--color-accent-light);
+    }
+
+    .btn-secondary:active { transform: scale(0.98); }
+
+    /* ============================================================
+       ECRÃ: HOME (#screen-home)
+       ============================================================ */
+    #screen-home { display: block; }
+    #screen-register { display: none; }
+
+    /* --- NAVEGAÇÃO --- */
+    .nav {
+      background-color: var(--color-bg-card);
+      box-shadow: var(--shadow-nav);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav__inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
+
+    /* --- HERO --- */
+    .hero {
+      padding: 80px 0 72px;
+    }
+
+    .hero__inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      gap: 56px;
+    }
+
+    .hero__badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--color-accent);
+      background-color: var(--color-accent-light);
+      border-radius: 100px;
+      padding: 5px 12px;
+      margin-bottom: 20px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .hero__badge .ti { font-size: 13px; }
+
+    .hero__title {
+      font-size: clamp(32px, 4vw, 46px);
+      font-weight: 700;
+      color: var(--color-text-primary);
+      letter-spacing: -1px;
+      line-height: 1.12;
+      margin-bottom: 18px;
+    }
+
+    .hero__title em {
+      font-style: normal;
+      color: var(--color-accent);
+    }
+
+    .hero__subtitle {
+      font-size: 17px;
+      font-weight: 400;
+      color: var(--color-text-secondary);
+      line-height: 1.65;
+      margin-bottom: 32px;
+      max-width: 420px;
+    }
+
+    /* Visual de apoio do hero */
+    .hero__visual {
+      background-color: var(--color-bg-card);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-card);
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .hero__visual-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .hero__visual-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--color-text-primary);
+    }
+
+    .hero__visual-badge {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--color-accent);
+      background-color: var(--color-accent-light);
+      border-radius: 6px;
+      padding: 3px 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Linha de item dentro do visual */
+    .hero__visual-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      background-color: var(--color-bg-input);
+      border-radius: var(--radius-input);
+    }
+
+    .hero__visual-row__icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .hero__visual-row__icon--green {
+      background-color: var(--color-accent-light);
+      color: var(--color-accent);
+    }
+
+    .hero__visual-row__icon--blue {
+      background-color: #EAF0FF;
+      color: #4A6CF7;
+    }
+
+    .hero__visual-row__icon--orange {
+      background-color: #FFF3E5;
+      color: #E07A28;
+    }
+
+    .hero__visual-row__icon .ti { font-size: 18px; }
+
+    .hero__visual-row__text { flex: 1; }
+
+    .hero__visual-row__label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--color-text-primary);
+      margin-bottom: 2px;
+    }
+
+    .hero__visual-row__meta {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--color-text-secondary);
+    }
+
+    .hero__visual-row__status {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      font-weight: 500;
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+
+    .hero__visual-row__status--ok {
+      background-color: var(--color-accent-light);
+      color: var(--color-accent);
+    }
+
+    .hero__visual-row__status--due {
+      background-color: #FFF3E5;
+      color: #E07A28;
+    }
+
+    .hero__visual-divider {
+      height: 1px;
+      background-color: var(--color-border);
+    }
+
+    .hero__visual-footer {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--color-text-secondary);
+    }
+
+    .hero__visual-footer .ti { font-size: 15px; color: var(--color-accent); }
+
+    /* --- PROPOSTA DE VALOR (3 colunas) --- */
+    .features {
+      padding: 56px 0 64px;
+    }
+
+    .features__grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .feature-card {
+      background-color: var(--color-bg-card);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-card);
+      padding: 28px 26px;
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.10), 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    .feature-card__icon {
+      width: 44px;
+      height: 44px;
+      background-color: var(--color-accent-light);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+
+    .feature-card__icon .ti {
+      font-size: 22px;
+      color: var(--color-accent);
+    }
+
+    .feature-card__title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--color-text-primary);
+      margin-bottom: 8px;
+      letter-spacing: -0.2px;
+    }
+
+    .feature-card__desc {
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--color-text-secondary);
+      line-height: 1.6;
+    }
+
+    /* --- PROVA SOCIAL --- */
+    .social-proof {
+      padding: 48px 0 72px;
+    }
+
+    .social-proof__inner {
+      background-color: var(--color-bg-card);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-card);
+      padding: 52px 48px;
+      text-align: center;
+    }
+
+    .social-proof__stat {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--color-accent);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 20px;
+    }
+
+    .social-proof__quote {
+      font-size: clamp(20px, 2.8vw, 28px);
+      font-weight: 700;
+      color: var(--color-text-primary);
+      letter-spacing: -0.5px;
+      line-height: 1.3;
+      max-width: 640px;
+      margin: 0 auto 32px;
+    }
+
+    .social-proof__quote em {
+      font-style: normal;
+      color: var(--color-accent);
+    }
+
+    /* --- FOOTER --- */
+    .footer {
+      background-color: var(--color-bg-card);
+      border-top: 1px solid var(--color-border);
+      padding: 24px 0;
+    }
+
+    .footer__inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .footer__copy {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--color-text-secondary);
+      opacity: 0.65;
+      letter-spacing: 0.3px;
+    }
+
+    .footer__links {
+      display: flex;
+      gap: 20px;
+    }
+
+    .footer__link {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--color-text-secondary);
+      opacity: 0.65;
+      text-decoration: none;
+      letter-spacing: 0.3px;
+      transition: opacity 0.15s ease;
+    }
+
+    .footer__link:hover { opacity: 1; color: var(--color-accent); }
+
+    /* ============================================================
+       ECRÃ: REGISTO (#screen-register)
+       ============================================================ */
+    #screen-register {
+      min-height: 100vh;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    #screen-register.is-visible {
+      display: flex;
+    }
+
+    /* Card do formulário (idêntico ao aprovado) */
+    .reg-card {
+      background-color: var(--color-bg-card);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-card);
+      padding: 40px 36px 36px;
+      width: 100%;
+      max-width: 440px;
+      animation: fadeUp 0.4s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Logo centrado dentro do card */
+    .reg-card .logo {
+      justify-content: center;
+      margin-bottom: 28px;
+    }
+
+    .reg-card__header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .reg-card__title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--color-text-primary);
+      letter-spacing: -0.3px;
+      line-height: 1.2;
+      margin-bottom: 6px;
+    }
+
+    .reg-card__subtitle {
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--color-text-secondary);
+      line-height: 1.5;
+    }
+
+    /* Formulário */
+    .form {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .form__group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .form__label {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+
+    .form__input {
+      width: 100%;
+      padding: 13px 16px;
+      background-color: var(--color-bg-input);
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--radius-input);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--color-text-primary);
+      transition: border-color 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease;
+      outline: none;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    .form__input::placeholder {
+      color: var(--color-text-secondary);
+      opacity: 0.6;
+    }
+
+    .form__input:focus {
+      border-color: var(--color-border-focus);
+      background-color: var(--color-bg-input-focus);
+      box-shadow: 0 0 0 3px rgba(91,187,47,0.12);
+    }
+
+    input[type="date"].form__input { color: var(--color-text-secondary); }
+
+    .form__divider {
+      height: 1px;
+      background-color: var(--color-border);
+      margin: 2px 0;
+    }
+
+    /* ============================================================
+       ECRÃ DE REGISTO — PASSO 1 — ESTILOS ESPECÍFICOS
+       ============================================================ */
+
+    /* --- Indicador de progresso --- */
+    .progress-wrap {
+      margin-bottom: 28px;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .progress-label__step {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--color-text-secondary);    /* cinzento médio */
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+
+    .progress-label__fraction {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--color-text-secondary);
+      opacity: 0.6;
+    }
+
+    .progress-bar {
+      height: 4px;
+      background-color: var(--color-border);  /* trilho cinzento */
+      border-radius: 100px;
+      overflow: hidden;
+    }
+
+    .progress-bar__fill {
+      height: 100%;
+      width: 50%;                              /* passo 1 de 2 = 50% */
+      background-color: var(--color-accent);  /* verde */
+      border-radius: 100px;
+      transition: width 0.4s ease;
+    }
+
+    /* --- Área de upload de foto --- */
+    .photo-upload {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .photo-upload__trigger {
+      position: relative;
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    /* Círculo de fundo (avatar ou preview) */
+    .photo-upload__circle {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background-color: var(--color-accent-light);   /* verde muito claro */
+      border: 2px dashed var(--color-accent-border); /* borda tracejada verde */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      transition: border-color 0.18s ease, background-color 0.18s ease;
+    }
+
+    .photo-upload__trigger:hover .photo-upload__circle {
+      border-color: var(--color-accent);
+      background-color: #DFF5C8;
+    }
+
+    /* Emoji de avatar por espécie */
+    .photo-upload__avatar {
+      font-size: 36px;
+      line-height: 1;
+      user-select: none;
+    }
+
+    /* Overlay da câmara — visível no hover */
+    .photo-upload__overlay {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: rgba(91, 187, 47, 0.55);     /* verde semitransparente */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.18s ease;
+    }
+
+    .photo-upload__trigger:hover .photo-upload__overlay { opacity: 1; }
+
+    .photo-upload__overlay .ti {
+      font-size: 22px;
+      color: #FFFFFF;
+    }
+
+    /* Preview da imagem seleccionada */
+    .photo-upload__preview {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+      display: none;
+    }
+
+    .photo-upload__preview.is-visible { display: block; }
+
+    /* Input file real, oculto */
+    .photo-upload__input { display: none; }
+
+    /* Label de instrução abaixo do círculo */
+    .photo-upload__hint {
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--color-text-secondary);     /* cinzento médio */
+      text-align: center;
+    }
+
+    /* --- Campos do formulário (herdam estilos globais) --- */
+    .form {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .form__group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .form__label {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+
+    /* Opcional badge na label */
+    .form__label-optional {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      font-weight: 400;
+      color: var(--color-text-secondary);
+      opacity: 0.6;
+      margin-left: 4px;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+
+    .form__input {
+      width: 100%;
+      padding: 13px 16px;
+      background-color: var(--color-bg-input);
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--radius-input);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--color-text-primary);
+      transition: border-color 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease;
+      outline: none;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    .form__input::placeholder {
+      color: var(--color-text-secondary);
+      opacity: 0.6;
+    }
+
+    .form__input:focus {
+      border-color: var(--color-border-focus);
+      background-color: var(--color-bg-input-focus);
+      box-shadow: 0 0 0 3px rgba(91,187,47,0.12);
+    }
+
+    /* Estado de erro no input */
+    .form__input.has-error {
+      border-color: #E53E3E;                 /* vermelho de erro */
+      background-color: #FFF5F5;             /* fundo rosa muito suave */
+    }
+
+    .form__input.has-error:focus {
+      border-color: #E53E3E;
+      box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.12);
+    }
+
+    /* Mensagem de erro inline */
+    .form__error {
+      display: none;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      font-weight: 500;
+      color: #E53E3E;                        /* vermelho */
+      margin-top: 2px;
+    }
+
+    .form__error.is-visible { display: flex; }
+    .form__error .ti { font-size: 13px; flex-shrink: 0; }
+
+    input[type="date"].form__input { color: var(--color-text-secondary); }
+
+    /* --- Selector de espécie (cartões grandes) --- */
+    .species-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .species-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    /* Cada cartão de espécie — mais alto e visual que o botão original */
+    .species-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 18px 12px;
+      background-color: var(--color-bg-input);
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--radius-input);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      transition: border-color 0.18s ease, background-color 0.18s ease,
+                  color 0.18s ease, box-shadow 0.18s ease, transform 0.12s ease;
+      user-select: none;
+    }
+
+    .species-card__emoji {
+      font-size: 28px;
+      line-height: 1;
+    }
+
+    .species-card:hover {
+      border-color: var(--color-accent-border);
+      color: var(--color-accent);
+      background-color: #F4FCF0;
+    }
+
+    /* Estado activo — borda verde, fundo verde claro */
+    .species-card.is-active {
+      background-color: var(--color-accent-light);   /* verde muito claro */
+      border-color: var(--color-accent);             /* verde principal */
+      color: var(--color-accent);
+      box-shadow: 0 0 0 3px rgba(91,187,47,0.12);
+    }
+
+    .species-card.is-active .species-card__emoji {
+      transform: scale(1.1);
+      display: inline-block;
+      transition: transform 0.2s ease;
+    }
+
+    /* --- Divisor visual --- */
+    .form__divider {
+      height: 1px;
+      background-color: var(--color-border);
+      margin: 2px 0;
+    }
+
+    /* --- Link de voltar --- */
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      margin-bottom: 20px;
+      transition: color 0.15s ease;
+      background: none;
+      border: none;
+      padding: 0;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .back-link:hover { color: var(--color-accent); }
+    .back-link .ti { font-size: 16px; }
+
+    /* --- Rodapé do ecrã de registo --- */
+    .reg-footer {
+      margin-top: 20px;
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--color-text-secondary);
+      opacity: 0.5;
+      letter-spacing: 0.4px;
+    }
+
+    /* ============================================================
+       PASSO 2 — PRIMEIRO EVENTO DE SAÚDE
+       ============================================================ */
+
+    /* Mini-ficha do animal no topo do Passo 2 */
+    .pet-mini {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      background-color: var(--color-accent-light);   /* verde muito claro */
+      border-radius: var(--radius-input);
+      margin-bottom: 24px;
+    }
+
+    .pet-mini__avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background-color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      overflow: hidden;
+      flex-shrink: 0;
+      border: 1.5px solid var(--color-accent-border);
+    }
+
+    .pet-mini__avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+
+    .pet-mini__info { flex: 1; }
+
+    .pet-mini__name {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--color-text-primary);
+      line-height: 1.2;
+    }
+
+    .pet-mini__species {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--color-accent);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 2px;
+    }
+
+    /* Cartões de escolha: Registar agora / Fazer isso depois */
+    .choice-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 0;
+    }
+
+    .choice-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 20px 12px;
+      background-color: var(--color-bg-input);
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--radius-input);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      transition: border-color 0.18s ease, background-color 0.18s ease,
+                  color 0.18s ease, box-shadow 0.18s ease;
+      text-align: center;
+      user-select: none;
+    }
+
+    .choice-card .ti {
+      font-size: 24px;
+      transition: transform 0.2s ease;
+    }
+
+    .choice-card:hover {
+      border-color: var(--color-accent-border);
+      color: var(--color-accent);
+      background-color: #F4FCF0;
+    }
+
+    .choice-card.is-active {
+      background-color: var(--color-accent-light);
+      border-color: var(--color-accent);
+      color: var(--color-accent);
+      box-shadow: 0 0 0 3px rgba(91,187,47,0.12);
+    }
+
+    .choice-card.is-active .ti { transform: scale(1.12); }
+
+    /* Selector de tipo de evento (Vacina / Desparasitação) */
+    .event-type-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .event-type-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 11px 12px;
+      background-color: var(--color-bg-input);
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--radius-input);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      transition: border-color 0.18s ease, background-color 0.18s ease, color 0.18s ease;
+    }
+
+    .event-type-btn .ti { font-size: 16px; }
+
+    .event-type-btn:hover {
+      border-color: var(--color-accent-border);
+      color: var(--color-accent);
+      background-color: #F4FCF0;
+    }
+
+    .event-type-btn.is-active {
+      background-color: var(--color-accent-light);
+      border-color: var(--color-accent);
+      color: var(--color-accent);
+    }
+
+    /* Formulário de evento inline — mostrado/escondido */
+    .event-form-wrap {
+      display: none;
+      flex-direction: column;
+      gap: 14px;
+      margin-top: 4px;
+    }
+
+    .event-form-wrap.is-visible { display: flex; }
+
+    /* Estado de loading */
+    .loading-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(242, 243, 247, 0.92);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 16px;
+      animation: fadeIn 0.2s ease both;
+    }
+
+    .loading-overlay.is-visible { display: flex; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--color-accent-border);
+      border-top-color: var(--color-accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .loading-text {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--color-text-primary);
+      text-align: center;
+    }
+
+    /* ============================================================
+       ECRÃ DE PERFIL DO PET
+       ============================================================ */
+
+    #screen-profile { display: none; }
+    #screen-profile.is-visible { display: block; }
+
+    #screen-step2 {
+      min-height: 100vh;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    #screen-step2.is-visible { display: flex; }
+
+    /* Nav do perfil */
+    .profile-nav {
+      background-color: var(--color-bg-card);
+      box-shadow: var(--shadow-nav);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .profile-nav__inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
+
+    /* Área de identidade do animal */
+    .profile-identity {
+      background-color: var(--color-bg-card);
+      box-shadow: var(--shadow-card);
+      border-radius: var(--radius-card);
+      padding: 28px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .profile-identity__photo {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background-color: var(--color-accent-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 34px;
+      border: 2px solid var(--color-accent-border);
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .profile-identity__photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+
+    .profile-identity__info { flex: 1; }
+
+    .profile-identity__name {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.4px;
+      color: var(--color-text-primary);
+      margin-bottom: 6px;
+    }
+
+    .profile-identity__tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .profile-tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      font-weight: 500;
+      padding: 4px 10px;
+      border-radius: 100px;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+    }
+
+    .profile-tag--species {
+      background-color: var(--color-accent-light);   /* verde claro */
+      color: var(--color-accent);
+    }
+
+    .profile-tag--breed {
+      background-color: var(--color-bg-input);
+      color: var(--color-text-secondary);
+      border: 1px solid var(--color-border);
+    }
+
+    .profile-tag--age {
+      background-color: #EAF0FF;                     /* azul muito claro */
+      color: #4A6CF7;
+    }
+
+    /* Card de estado de saúde */
+    .health-status-card {
+      background-color: var(--color-accent-light);   /* fundo verde claro */
+      border-radius: var(--radius-card);
+      padding: 22px 24px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .health-status-card__icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background-color: rgba(91,187,47,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .health-status-card__icon .ti {
+      font-size: 20px;
+      color: var(--color-accent);
+    }
+
+    .health-status-card__text {
+      font-size: 14px;
+      color: var(--color-text-primary);
+      line-height: 1.55;
+    }
+
+    /* Secções do perfil */
+    .profile-section {
+      background-color: var(--color-bg-card);
+      box-shadow: var(--shadow-card);
+      border-radius: var(--radius-card);
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+
+    .profile-section__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .profile-section__title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--color-text-primary);
+      letter-spacing: -0.2px;
+    }
+
+    .profile-section__badge {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      background-color: var(--color-bg-input);
+      border: 1px solid var(--color-border);
+      border-radius: 6px;
+      padding: 3px 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    /* Estado vazio das secções */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 28px 16px;
+      text-align: center;
+      gap: 8px;
+    }
+
+    .empty-state__icon {
+      font-size: 28px;
+      margin-bottom: 4px;
+      opacity: 0.45;
+    }
+
+    .empty-state__text {
+      font-size: 14px;
+      color: var(--color-text-secondary);
+      line-height: 1.5;
+    }
+
+    /* Linha de evento no historial */
+    .event-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .event-row:last-child { border-bottom: none; }
+
+    .event-row__icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .event-row__icon--vaccine {
+      background-color: var(--color-accent-light);
+      color: var(--color-accent);
+    }
+
+    .event-row__icon--deworm {
+      background-color: #FFF3E5;
+      color: #E07A28;
+    }
+
+    .event-row__icon .ti { font-size: 17px; }
+
+    .event-row__info { flex: 1; }
+
+    .event-row__name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--color-text-primary);
+      margin-bottom: 2px;
+    }
+
+    .event-row__date {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--color-text-secondary);
+    }
+
+    .event-row__type {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      font-weight: 500;
+      padding: 3px 8px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .event-row__type--vaccine {
+      background-color: var(--color-accent-light);
+      color: var(--color-accent);
+    }
+
+    .event-row__type--deworm {
+      background-color: #FFF3E5;
+      color: #E07A28;
+    }
+
+    /* Botão flutuante "+" */
+    .fab {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      width: 52px;
+      height: 52px;
+      background-color: var(--color-accent);
+      border: none;
+      border-radius: 50%;
+      display: none;                              /* mostrado via JS quando no perfil */
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(91,187,47,0.40);
+      transition: background-color 0.18s ease, transform 0.12s ease, box-shadow 0.18s ease;
+      z-index: 90;
+    }
+
+    .fab.is-visible { display: flex; }
+
+    .fab:hover {
+      background-color: var(--color-accent-hover);
+      transform: scale(1.07);
+    }
+
+    .fab:active { transform: scale(0.96); }
+
+    .fab .ti {
+      font-size: 24px;
+      color: #FFFFFF;
+    }
+
+    /* Modal de evento (aberto pelo FAB) */
+    .event-modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(26,26,26,0.45);
+      z-index: 150;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .event-modal-backdrop.is-visible { display: flex; }
+
+    .event-modal {
+      background-color: var(--color-bg-card);
+      border-radius: var(--radius-card);
+      padding: 28px 28px 24px;
+      width: 100%;
+      max-width: 480px;
+      animation: slideUp 0.28s ease both;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .event-modal__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .event-modal__title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--color-text-primary);
+      letter-spacing: -0.2px;
+    }
+
+    .event-modal__close {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--color-text-secondary);
+      display: flex;
+      align-items: center;
+      padding: 4px;
+      border-radius: 6px;
+      transition: color 0.15s ease;
+    }
+
+    .event-modal__close:hover { color: var(--color-text-primary); }
+    .event-modal__close .ti { font-size: 20px; }
+
+    /* Wrapper do conteúdo do perfil (com scroll) */
+    .profile-body {
+      padding: 24px 0 100px;
+    }
+
+    /* ============================================================
+       ECRÃ: HISTORIAL COMPLETO
+       ============================================================ */
+
+    #screen-history { display: none; }
+    #screen-history.is-visible { display: block; }
+
+    /* Nav secundária reutilizável (historial + detalhe) */
+    .secondary-nav {
+      background-color: var(--color-bg-card);
+      box-shadow: var(--shadow-nav);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .secondary-nav__inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+      gap: 12px;
+    }
+
+    .secondary-nav__left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .secondary-nav__title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--color-text-primary);
+      letter-spacing: -0.2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Botão de voltar (ícone + texto) */
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 6px 8px 6px 0;
+      border-radius: 8px;
+      transition: color 0.15s ease;
+      flex-shrink: 0;
+    }
+
+    .btn-back:hover { color: var(--color-accent); }
+    .btn-back .ti { font-size: 17px; }
+
+    /* Corpo do historial */
+    .history-body {
+      padding: 24px 0 80px;
+    }
+
+    /* Grupo de eventos por tipo */
+    .history-group {
+      margin-bottom: 28px;
+    }
+
+    .history-group__title {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      margin-bottom: 10px;
+      padding: 0 2px;
+    }
+
+    /* Cartão de evento no historial (clicável) */
+    .history-card {
+      background-color: var(--color-bg-card);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-card);
+      padding: 16px 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: box-shadow 0.18s ease, transform 0.12s ease;
+      border: 1.5px solid transparent;
+    }
+
+    .history-card:hover {
+      box-shadow: 0 6px 28px rgba(0,0,0,0.10);
+      transform: translateY(-1px);
+      border-color: var(--color-accent-border);
+    }
+
+    .history-card__icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .history-card__icon--vaccine {
+      background-color: var(--color-accent-light);   /* verde claro */
+      color: var(--color-accent);
+    }
+
+    .history-card__icon--deworm {
+      background-color: #FFF3E5;                     /* âmbar claro */
+      color: #E07A28;
+    }
+
+    .history-card__icon .ti { font-size: 20px; }
+
+    .history-card__body { flex: 1; min-width: 0; }
+
+    .history-card__name {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--color-text-primary);
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .history-card__meta {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--color-text-secondary);
+      line-height: 1.6;
+    }
+
+    .history-card__next {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--color-accent);
+    }
+
+    .history-card__notes {
+      font-size: 12px;
+      color: var(--color-text-secondary);
+      margin-top: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .history-card__arrow {
+      color: var(--color-border);
+      flex-shrink: 0;
+      transition: color 0.15s ease;
+    }
+
+    .history-card:hover .history-card__arrow { color: var(--color-accent); }
+    .history-card__arrow .ti { font-size: 18px; }
+
+    /* Estado vazio do historial */
+    .history-empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 64px 24px;
+      gap: 10px;
+    }
+
+    .history-empty__icon {
+      font-size: 48px;
+      color: var(--color-border);
+      margin-bottom: 8px;
+      line-height: 1;
+    }
+
+    .history-empty__title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--color-text-primary);
+    }
+
+    .history-empty__sub {
+      font-size: 14px;
+      color: var(--color-text-secondary);
+      line-height: 1.55;
+    }
+
+    /* ============================================================
+       ECRÃ: DETALHE DE EVENTO
+       ============================================================ */
+
+    #screen-detail { display: none; }
+    #screen-detail.is-visible { display: block; }
+
+    .detail-body {
+      padding: 24px 0 80px;
+    }
+
+    /* Card de detalhe */
+    .detail-card {
+      background-color: var(--color-bg-card);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-card);
+      padding: 28px 26px;
+      margin-bottom: 16px;
+    }
+
+    /* Badge de tipo no detalhe */
+    .detail-type-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      padding: 5px 12px;
+      border-radius: 100px;
+      margin-bottom: 14px;
+    }
+
+    .detail-type-badge--vaccine {
+      background-color: var(--color-accent-light);
+      color: var(--color-accent);
+    }
+
+    .detail-type-badge--deworm {
+      background-color: #FFF3E5;
+      color: #E07A28;
+    }
+
+    .detail-type-badge .ti { font-size: 13px; }
+
+    .detail-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--color-text-primary);
+      letter-spacing: -0.4px;
+      margin-bottom: 24px;
+    }
+
+    /* Linhas de detalhe */
+    .detail-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 13px 0;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .detail-row:last-child { border-bottom: none; }
+
+    .detail-row__icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background-color: var(--color-bg-input);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .detail-row__icon .ti {
+      font-size: 16px;
+      color: var(--color-text-secondary);
+    }
+
+    .detail-row__content { flex: 1; }
+
+    .detail-row__label {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 3px;
+    }
+
+    .detail-row__value {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--color-text-primary);
+      line-height: 1.5;
+    }
+
+    /* Variantes de urgência do próximo evento */
+    .detail-row__value--urgent { color: #E53E3E; }   /* vermelho: esta semana */
+    .detail-row__value--soon   { color: #E07A28; }   /* âmbar: em breve */
+
+    .detail-urgency-tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      font-weight: 500;
+      padding: 2px 8px;
+      border-radius: 6px;
+      margin-left: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      vertical-align: middle;
+    }
+
+    .detail-urgency-tag--urgent {
+      background-color: #FFF0F0;
+      color: #E53E3E;
+    }
+
+    .detail-urgency-tag--soon {
+      background-color: #FFF3E5;
+      color: #E07A28;
+    }
+
+    /* Acções do detalhe */
+    .detail-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .btn-danger {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 13px 20px;
+      background-color: #FFF0F0;               /* vermelho muito claro */
+      border: 1.5px solid #FECACA;
+      border-radius: var(--radius-btn);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: #E53E3E;
+      cursor: pointer;
+      transition: background-color 0.18s ease, border-color 0.18s ease, transform 0.12s ease;
+    }
+
+    .btn-danger:hover {
+      background-color: #FEE2E2;
+      border-color: #FCA5A5;
+    }
+
+    .btn-danger:active { transform: scale(0.98); }
+    .btn-danger .ti { font-size: 16px; }
+
+    /* Modal de confirmação de eliminação */
+    .confirm-modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(26,26,26,0.50);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .confirm-modal-backdrop.is-visible { display: flex; }
+
+    .confirm-modal {
+      background-color: var(--color-bg-card);
+      border-radius: var(--radius-card);
+      padding: 28px 28px 24px;
+      width: 100%;
+      max-width: 380px;
+      animation: fadeUp 0.25s ease both;
+    }
+
+    .confirm-modal__icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background-color: #FFF0F0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+
+    .confirm-modal__icon .ti {
+      font-size: 22px;
+      color: #E53E3E;
+    }
+
+    .confirm-modal__title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--color-text-primary);
+      margin-bottom: 8px;
+      letter-spacing: -0.2px;
+    }
+
+    .confirm-modal__text {
+      font-size: 14px;
+      color: var(--color-text-secondary);
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+
+    .confirm-modal__actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .btn-danger--full {
+      width: 100%;
+      padding: 14px;
+    }
+
+    .btn-cancel {
+      width: 100%;
+      padding: 13px;
+      background: none;
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--radius-btn);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      transition: background-color 0.15s ease, color 0.15s ease;
+    }
+
+    .btn-cancel:hover {
+      background-color: var(--color-bg-input);
+      color: var(--color-text-primary);
+    }
+
+    /* ============================================================
+       ECRÃ: FORMULÁRIO DE EVENTO (criação e edição)
+       ============================================================ */
+
+    #screen-event-form { display: none; }
+    #screen-event-form.is-visible { display: block; }
+
+    /* Corpo do formulário de evento */
+    .event-form-body {
+      padding: 24px 0 80px;
+    }
+
+    /* Card contentor do formulário */
+    .event-form-card {
+      background-color: var(--color-bg-card);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-card);
+      padding: 28px 26px 24px;
+      max-width: 560px;
+      margin: 0 auto;
+    }
+
+    /* Selector de tipo de evento — dois cartões lado a lado */
+    .ef-type-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .ef-type-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 18px 12px;
+      background-color: var(--color-bg-input);
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--radius-input);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      transition: border-color 0.18s ease, background-color 0.18s ease,
+                  color 0.18s ease, box-shadow 0.18s ease;
+      user-select: none;
+    }
+
+    .ef-type-card__icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--color-border);      /* neutro por defeito */
+      transition: background-color 0.18s ease;
+    }
+
+    .ef-type-card__icon .ti {
+      font-size: 19px;
+      color: var(--color-text-secondary);
+      transition: color 0.18s ease;
+    }
+
+    .ef-type-card:hover {
+      border-color: var(--color-accent-border);
+      color: var(--color-accent);
+      background-color: #F4FCF0;
+    }
+
+    .ef-type-card:hover .ef-type-card__icon {
+      background-color: var(--color-accent-light);
+    }
+
+    .ef-type-card:hover .ef-type-card__icon .ti {
+      color: var(--color-accent);
+    }
+
+    /* Estado activo — idêntico ao selector de espécie aprovado */
+    .ef-type-card.is-active {
+      background-color: var(--color-accent-light);   /* verde muito claro */
+      border-color: var(--color-accent);             /* verde principal */
+      color: var(--color-accent);
+      box-shadow: 0 0 0 3px rgba(91,187,47,0.12);
+    }
+
+    .ef-type-card.is-active .ef-type-card__icon {
+      background-color: rgba(91,187,47,0.18);
+    }
+
+    .ef-type-card.is-active .ef-type-card__icon .ti {
+      color: var(--color-accent);
+    }
+
+    /* Separador visual entre secções do formulário */
+    .ef-divider {
+      height: 1px;
+      background-color: var(--color-border);
+      margin: 4px 0;
+    }
+
+    /* Botão de guardar com largura total (reutiliza .btn-primary) */
+    .ef-submit {
+      width: 100%;
+      margin-top: 4px;
+    }
+
+    /* ============================================================
+       TOAST DE CONFIRMAÇÃO
+       ============================================================ */
+
+    .toast {
+      position: fixed;
+      top: -80px;                              /* começa fora do ecrã */
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 300;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 20px;
+      background-color: var(--color-accent-light);   /* verde claro */
+      border: 1.5px solid var(--color-accent-border);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-card);
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--color-text-primary);
+      white-space: nowrap;
+      max-width: calc(100vw - 48px);
+      transition: top 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);  /* spring */
+    }
+
+    .toast.is-visible { top: 16px; }
+
+    .toast__icon {
+      font-size: 18px;
+      color: var(--color-accent);
+      flex-shrink: 0;
+    }
+
+    .toast__text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* ============================================================
+       COMPONENTE IA: RESUMO DE SAÚDE
+       ============================================================ */
+
+    /* --- Skeleton genérico (reutilizável) --- */
+    @keyframes shimmer {
+      0%   { background-position: -400px 0; }
+      100% { background-position: 400px 0; }
+    }
+
+    .skeleton {
+      background: linear-gradient(
+        90deg,
+        var(--color-border) 25%,
+        #ECEEF3 50%,
+        var(--color-border) 75%
+      );
+      background-size: 800px 100%;
+      animation: shimmer 1.4s infinite linear;
+      border-radius: 6px;
+    }
+
+    /* --- Card de estado de saúde (substitui o estático) --- */
+    .ai-health-card {
+      border-radius: var(--radius-card);
+      padding: 20px 22px;
+      margin-bottom: 20px;
+      transition: background-color 0.3s ease;
+    }
+
+    /* Estado: loading */
+    .ai-health-card--loading {
+      background-color: var(--color-bg-card);
+      box-shadow: var(--shadow-card);
+    }
+
+    .ai-health-card__skeleton-label {
+      height: 12px;
+      width: 110px;
+      margin-bottom: 12px;
+    }
+
+    .ai-health-card__skeleton-line1 {
+      height: 14px;
+      width: 92%;
+      margin-bottom: 8px;
+    }
+
+    .ai-health-card__skeleton-line2 {
+      height: 14px;
+      width: 70%;
+    }
+
+    .ai-health-card__loading-hint {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--color-text-secondary);
+      opacity: 0.55;
+      margin-top: 12px;
+      letter-spacing: 0.3px;
+    }
+
+    /* Estado: sucesso */
+    .ai-health-card--success {
+      background-color: var(--color-accent-light);   /* verde muito claro */
+      border: 1.5px solid var(--color-accent-border);
+    }
+
+    .ai-health-card__label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--color-accent);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 10px;
+    }
+
+    .ai-health-card__label .ti { font-size: 13px; }
+
+    .ai-health-card__text {
+      font-size: 15px;
+      font-style: italic;
+      color: #2D6A10;                            /* verde escuro */
+      line-height: 1.7;
+    }
+
+    /* Estado: erro */
+    .ai-health-card--error {
+      background-color: var(--color-bg-card);
+      box-shadow: var(--shadow-card);
+    }
+
+    .ai-health-card__error-text {
+      font-size: 14px;
+      color: var(--color-text-secondary);
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+
+    /* Estado: sem eventos */
+    .ai-health-card--empty {
+      background-color: var(--color-bg-card);
+      box-shadow: var(--shadow-card);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .ai-health-card__empty-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background-color: var(--color-bg-input);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .ai-health-card__empty-icon .ti {
+      font-size: 20px;
+      color: var(--color-text-secondary);
+      opacity: 0.5;
+    }
+
+    .ai-health-card__empty-text {
+      font-size: 14px;
+      color: var(--color-text-secondary);
+      line-height: 1.55;
+    }
+
+    /* ============================================================
+       COMPONENTE IA: LEMBRETES EMOCIONAIS (próximos eventos)
+       ============================================================ */
+
+    /* Card "Tudo em dia" */
+    .reminders-all-ok {
+      background-color: var(--color-accent-light);
+      border-radius: var(--radius-card);
+      padding: 20px 22px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .reminders-all-ok__icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background-color: rgba(91,187,47,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .reminders-all-ok__icon .ti {
+      font-size: 20px;
+      color: var(--color-accent);
+    }
+
+    .reminders-all-ok__title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--color-text-primary);
+      margin-bottom: 2px;
+    }
+
+    .reminders-all-ok__sub {
+      font-size: 13px;
+      color: var(--color-text-secondary);
+    }
+
+    /* Card de lembrete individual */
+    .reminder-card {
+      background-color: var(--color-bg-card);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-card);
+      padding: 16px 18px;
+      margin-bottom: 10px;
+    }
+
+    .reminder-card__header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .reminder-card__icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .reminder-card__icon--vaccine {
+      background-color: var(--color-accent-light);
+      color: var(--color-accent);
+    }
+
+    .reminder-card__icon--deworm {
+      background-color: #FFF3E5;
+      color: #E07A28;
+    }
+
+    .reminder-card__icon .ti { font-size: 17px; }
+
+    .reminder-card__name {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--color-text-primary);
+      flex: 1;
+    }
+
+    /* Badge de urgência */
+    .reminder-badge {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      font-weight: 500;
+      padding: 3px 8px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      flex-shrink: 0;
+    }
+
+    .reminder-badge--urgent {
+      background-color: #FFF0F0;
+      color: #E53E3E;
+    }
+
+    .reminder-badge--soon {
+      background-color: #FFF3E5;
+      color: #E07A28;
+    }
+
+    .reminder-badge--neutral {
+      background-color: var(--color-bg-input);
+      color: var(--color-text-secondary);
+      border: 1px solid var(--color-border);
+    }
+
+    /* Separador */
+    .reminder-card__divider {
+      height: 1px;
+      background-color: var(--color-border);
+      margin-bottom: 10px;
+    }
+
+    /* Corpo do lembrete — texto da IA */
+    .reminder-card__body {
+      font-size: 13px;
+      color: var(--color-text-secondary);
+      line-height: 1.65;
+    }
+
+    /* Skeleton dentro do card de lembrete */
+    .reminder-skeleton-line {
+      height: 12px;
+      margin-bottom: 7px;
+    }
+
+    .reminder-skeleton-line:last-child { margin-bottom: 0; }
+
+    /* ============================================================
+       BANNER OFFLINE
+       ============================================================ */
+
+    .offline-banner {
+      display: none;
+      position: sticky;
+      top: 64px;                               /* abaixo da navbar (64px de altura) */
+      z-index: 99;
+      background-color: #FFFBEB;              /* âmbar muito claro */
+      border-bottom: 1px solid #FDE68A;       /* âmbar subtil */
+      padding: 10px 0;
+    }
+
+    .offline-banner.is-visible { display: block; }
+
+    .offline-banner__inner {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #92400E;                         /* âmbar escuro */
+    }
+
+    .offline-banner__inner .ti {
+      font-size: 16px;
+      color: #D97706;
+      flex-shrink: 0;
+    }
+
+    /* Toast de erro (variante vermelha do toast existente) */
+    .toast--error {
+      background-color: #FFF0F0;
+      border-color: #FECACA;
+      color: #C53030;
+    }
+
+    .toast--error .toast__icon { color: #E53E3E; }
+
+    /* ============================================================
+       RESPONSIVIDADE
+       ============================================================ */
+    @media (max-width: 768px) {
+      .hero__inner {
+        grid-template-columns: 1fr;
+        gap: 36px;
+      }
+
+      .features__grid {
+        grid-template-columns: 1fr;
+      }
+
+      .social-proof__inner {
+        padding: 36px 24px;
+      }
+
+      .footer__inner {
+        flex-direction: column;
+        gap: 12px;
+        text-align: center;
+      }
+
+      .footer__links { justify-content: center; }
+    }
+
+    @media (max-width: 480px) {
+      .hero { padding: 48px 0 40px; }
+      .container { padding: 0 18px; }
+      .reg-card { padding: 32px 22px 28px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ============================================================
+       ECRÃ 1: HOME
+       ============================================================ -->
+  <div id="screen-home">
+
+    <!-- NAV -->
+    <nav class="nav">
+      <div class="container nav__inner">
+        <div class="logo" onclick="goHome()">
+          <div class="logo__icon-wrap">
+            <i class="ti ti-heart-rate-monitor"></i>
+          </div>
+          <div class="logo__wordmark">Pet<span>Saúde</span></div>
+        </div>
+        <button class="btn-primary" onclick="goRegister()">
+          Criar a ficha do meu animal <i class="ti ti-arrow-right"></i>
+        </button>
+      </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="container">
+        <div class="hero__inner">
+
+          <!-- Coluna esquerda: copy -->
+          <div class="hero__content">
+            <div class="hero__badge">
+              <i class="ti ti-map-pin"></i> Feito para Portugal
+            </div>
+            <h1 class="hero__title">
+              A ficha oficial da <em>saúde</em> do seu animal.
+            </h1>
+            <p class="hero__subtitle">
+              Guarda, organiza e consulta toda a saúde do teu cão ou gato.
+              Sempre pronto quando mais precisas.
+            </p>
+            <button class="btn-primary" onclick="goRegister()">
+              Começar agora — é gratuito <i class="ti ti-arrow-right"></i>
+            </button>
+          </div>
+
+          <!-- Coluna direita: mockup visual -->
+          <div class="hero__visual">
+            <div class="hero__visual-header">
+              <span class="hero__visual-title">Ficha de Chica Maria</span>
+              <span class="hero__visual-badge">Activa</span>
+            </div>
+
+            <div class="hero__visual-row">
+              <div class="hero__visual-row__icon hero__visual-row__icon--green">
+                <i class="ti ti-vaccine"></i>
+              </div>
+              <div class="hero__visual-row__text">
+                <div class="hero__visual-row__label">Raiva · Vacina</div>
+                <div class="hero__visual-row__meta">Próxima dose: Março 2026</div>
+              </div>
+              <span class="hero__visual-row__status hero__visual-row__status--ok">Em dia</span>
+            </div>
+
+            <div class="hero__visual-row">
+              <div class="hero__visual-row__icon hero__visual-row__icon--orange">
+                <i class="ti ti-bug"></i>
+              </div>
+              <div class="hero__visual-row__text">
+                <div class="hero__visual-row__label">Desparasitação</div>
+                <div class="hero__visual-row__meta">Última: Outubro 2024</div>
+              </div>
+              <span class="hero__visual-row__status hero__visual-row__status--due">A vencer</span>
+            </div>
+
+            <div class="hero__visual-row">
+              <div class="hero__visual-row__icon hero__visual-row__icon--blue">
+                <i class="ti ti-stethoscope"></i>
+              </div>
+              <div class="hero__visual-row__text">
+                <div class="hero__visual-row__label">Consulta anual</div>
+                <div class="hero__visual-row__meta">Agendada para 15 Jan</div>
+              </div>
+              <span class="hero__visual-row__status hero__visual-row__status--ok">Marcado</span>
+            </div>
+
+            <div class="hero__visual-divider"></div>
+
+            <div class="hero__visual-footer">
+              <i class="ti ti-shield-check"></i>
+              Ficha verificada · Clínica Veterinária Lisboa
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- PROPOSTA DE VALOR -->
+    <section class="features">
+      <div class="container">
+        <div class="features__grid">
+
+          <div class="feature-card">
+            <div class="feature-card__icon">
+              <i class="ti ti-layout-list"></i>
+            </div>
+            <h3 class="feature-card__title">Tudo num só lugar</h3>
+            <p class="feature-card__desc">
+              Vacinas, desparasitações e historial clínico organizados numa ficha clara e sempre actualizada.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-card__icon">
+              <i class="ti ti-device-mobile"></i>
+            </div>
+            <h3 class="feature-card__title">Sempre acessível</h3>
+            <p class="feature-card__desc">
+              Consulta a ficha do teu animal a qualquer momento, mesmo numa urgência veterinária às três da manhã.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-card__icon">
+              <i class="ti ti-heart"></i>
+            </div>
+            <h3 class="feature-card__title">Pensado para ti</h3>
+            <p class="feature-card__desc">
+              Linguagem humana, sem termos técnicos ou clínicos. Porque cuidas de um animal, não estudas medicina veterinária.
+            </p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- PROVA SOCIAL -->
+    <section class="social-proof">
+      <div class="container">
+        <div class="social-proof__inner">
+          <p class="social-proof__stat">Portugal · 2025</p>
+          <h2 class="social-proof__quote">
+            Mais de 2,3 milhões de cães e gatos em Portugal.
+            Nenhum tem uma ficha digital organizada.
+            <em>Até agora.</em>
+          </h2>
+          <button class="btn-secondary" onclick="goRegister()">
+            <i class="ti ti-plus"></i> Criar a ficha do meu animal
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <div class="container footer__inner">
+        <span class="footer__copy">PetSaúde · petsaude.pt · Começando por Portugal</span>
+        <div class="footer__links">
+          <a class="footer__link" href="#">Privacidade</a>
+          <a class="footer__link" href="#">Termos</a>
+          <a class="footer__link" href="#">Contacto</a>
+        </div>
+      </div>
+    </footer>
+
+  </div><!-- /screen-home -->
+
+
+  <!-- ============================================================
+       ECRÃ 2: REGISTO — PASSO 1 DE 2
+       ============================================================ -->
+  <div id="screen-register">
+
+    <div class="reg-card">
+
+      <!-- Logótipo centrado / clicável para voltar -->
+      <div class="logo" onclick="goHome()" title="Voltar à página inicial">
+        <div class="logo__icon-wrap">
+          <i class="ti ti-heart-rate-monitor"></i>
+        </div>
+        <div class="logo__wordmark">Pet<span>Saúde</span></div>
+      </div>
+
+      <!-- Indicador de progresso -->
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span class="progress-label__step">Passo 1 de 2</span>
+          <span class="progress-label__fraction">Identidade do animal</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-bar__fill"></div>
+        </div>
+      </div>
+
+      <!-- Cabeçalho -->
+      <div class="reg-card__header">
+        <h1 class="reg-card__title">Vamos criar a ficha oficial</h1>
+        <p class="reg-card__subtitle">Começa pela identidade do teu animal.</p>
+      </div>
+
+      <!-- Área de upload de foto -->
+      <div class="photo-upload">
+        <label class="photo-upload__trigger" for="photo-input" title="Adicionar foto">
+          <div class="photo-upload__circle" id="photo-circle">
+            <!-- Avatar por espécie (muda com JS) -->
+            <span class="photo-upload__avatar" id="photo-avatar">🐶</span>
+            <!-- Preview da foto seleccionada -->
+            <img class="photo-upload__preview" id="photo-preview" alt="Foto do animal" />
+          </div>
+          <!-- Overlay da câmara no hover -->
+          <div class="photo-upload__overlay">
+            <i class="ti ti-camera"></i>
+          </div>
+        </label>
+        <input
+          class="photo-upload__input"
+          type="file"
+          id="photo-input"
+          accept="image/*"
+          onchange="handlePhotoUpload(event)"
+        />
+        <span class="photo-upload__hint">Toca para adicionar uma foto</span>
+      </div>
+
+      <!-- Formulário -->
+      <div class="form" id="reg-form">
+
+        <!-- Campo: Nome -->
+        <div class="form__group">
+          <label class="form__label" for="pet-name">Nome</label>
+          <input
+            class="form__input"
+            id="pet-name"
+            type="text"
+            placeholder="Como se chama?"
+            autocomplete="off"
+          />
+          <!-- Erro inline -->
+          <span class="form__error" id="error-name">
+            <i class="ti ti-alert-circle"></i> O nome é obrigatório
+          </span>
+        </div>
+
+        <!-- Selector de espécie -->
+        <div class="species-group">
+          <span class="form__label">Espécie</span>
+          <div class="species-options">
+            <button
+              class="species-card is-active"
+              id="card-dog"
+              type="button"
+              onclick="selectSpecies('dog')"
+            >
+              <span class="species-card__emoji">🐶</span>
+              Cão
+            </button>
+            <button
+              class="species-card"
+              id="card-cat"
+              type="button"
+              onclick="selectSpecies('cat')"
+            >
+              <span class="species-card__emoji">🐱</span>
+              Gato
+            </button>
+          </div>
+        </div>
+
+        <div class="form__divider"></div>
+
+        <!-- Campo: Raça (opcional) -->
+        <div class="form__group">
+          <label class="form__label" for="pet-breed">
+            Raça <span class="form__label-optional">(opcional)</span>
+          </label>
+          <input
+            class="form__input"
+            id="pet-breed"
+            type="text"
+            placeholder="ex. Labrador, Persa, SRD..."
+            autocomplete="off"
+          />
+        </div>
+
+        <!-- Campo: Data de nascimento -->
+        <div class="form__group">
+          <label class="form__label" for="pet-dob">Data de nascimento</label>
+          <input
+            class="form__input"
+            id="pet-dob"
+            type="date"
+          />
+        </div>
+
+        <!-- Botão primário -->
+        <button class="btn-primary btn-primary--full" type="button" onclick="handleContinue()">
+          Continuar <i class="ti ti-arrow-right"></i>
+        </button>
+
+      </div>
+    </div>
+
+    <!-- Link de voltar -->
+    <button class="back-link" onclick="goHome()">
+      <i class="ti ti-arrow-left"></i> Voltar à página inicial
+    </button>
+
+    <span class="reg-footer">PetSaúde · Portugal</span>
+
+  </div><!-- /screen-register -->
+
+
+  <!-- ============================================================
+       ECRÃ 3: REGISTO — PASSO 2 DE 2
+       ============================================================ -->
+  <div id="screen-step2">
+
+    <div class="reg-card">
+
+      <!-- Logótipo -->
+      <div class="logo" onclick="goHome()" title="Voltar à página inicial">
+        <div class="logo__icon-wrap">
+          <i class="ti ti-heart-rate-monitor"></i>
+        </div>
+        <div class="logo__wordmark">Pet<span>Saúde</span></div>
+      </div>
+
+      <!-- Indicador de progresso — Passo 2 -->
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span class="progress-label__step">Passo 2 de 2</span>
+          <span class="progress-label__fraction">Primeiro evento</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-bar__fill" style="width:100%"></div>
+        </div>
+      </div>
+
+      <!-- Mini-ficha do animal (preenchida com dados do Passo 1) -->
+      <div class="pet-mini" id="step2-mini">
+        <div class="pet-mini__avatar" id="step2-avatar">🐶</div>
+        <div class="pet-mini__info">
+          <div class="pet-mini__name" id="step2-name">—</div>
+          <div class="pet-mini__species" id="step2-species">Cão</div>
+        </div>
+      </div>
+
+      <!-- Cabeçalho -->
+      <div class="reg-card__header">
+        <h1 class="reg-card__title">Primeiro evento de saúde</h1>
+        <p class="reg-card__subtitle">Opcional, mas útil. Podes sempre adicionar depois.</p>
+      </div>
+
+      <!-- Cartões de escolha -->
+      <div class="choice-cards" style="margin-bottom: 20px;">
+        <button class="choice-card" id="choice-now" type="button" onclick="selectChoice('now')">
+          <i class="ti ti-circle-plus"></i>
+          Registar agora
+        </button>
+        <button class="choice-card" id="choice-later" type="button" onclick="selectChoice('later')">
+          <i class="ti ti-clock"></i>
+          Fazer isso depois
+        </button>
+      </div>
+
+      <!-- Formulário de evento — visível só se "Registar agora" -->
+      <div class="event-form-wrap" id="event-form-wrap">
+
+        <!-- Tipo de evento -->
+        <div class="form__group">
+          <span class="form__label">Tipo de evento</span>
+          <div class="event-type-options">
+            <button class="event-type-btn is-active" id="etype-vaccine" type="button" onclick="selectEventType('vaccine')">
+              <i class="ti ti-vaccine"></i> Vacina
+            </button>
+            <button class="event-type-btn" id="etype-deworm" type="button" onclick="selectEventType('deworm')">
+              <i class="ti ti-bug"></i> Desparasitação
+            </button>
+          </div>
+        </div>
+
+        <!-- Nome do evento -->
+        <div class="form__group">
+          <label class="form__label" for="ev-name">Nome do evento</label>
+          <input class="form__input" id="ev-name" type="text" placeholder="ex. Raiva, Múltipla..." autocomplete="off" />
+        </div>
+
+        <!-- Data de aplicação -->
+        <div class="form__group">
+          <label class="form__label" for="ev-date">Data de aplicação</label>
+          <input class="form__input" id="ev-date" type="date" />
+        </div>
+
+        <!-- Próximo evento (opcional) -->
+        <div class="form__group">
+          <label class="form__label" for="ev-next">
+            Próximo evento <span class="form__label-optional">(opcional)</span>
+          </label>
+          <input class="form__input" id="ev-next" type="date" />
+        </div>
+
+        <!-- Observações (opcional) -->
+        <div class="form__group">
+          <label class="form__label" for="ev-notes">
+            Observações <span class="form__label-optional">(opcional)</span>
+          </label>
+          <textarea
+            class="form__input"
+            id="ev-notes"
+            rows="2"
+            placeholder="Reacções, lote, clínica..."
+            style="resize:none; line-height:1.5;"
+          ></textarea>
+        </div>
+
+      </div>
+
+      <!-- Botão final -->
+      <button class="btn-primary btn-primary--full" type="button" id="btn-create" onclick="handleCreateFicha()" style="margin-top: 4px;">
+        Criar a ficha <i class="ti ti-check"></i>
+      </button>
+
+    </div>
+
+    <!-- Link de voltar ao passo 1 -->
+    <button class="back-link" onclick="goStep1()">
+      <i class="ti ti-arrow-left"></i> Voltar ao passo anterior
+    </button>
+
+    <span class="reg-footer">PetSaúde · Portugal</span>
+
+  </div><!-- /screen-step2 -->
+
+
+  <!-- ============================================================
+       ECRÃ 4: PERFIL DO PET
+       ============================================================ -->
+  <div id="screen-profile">
+
+    <!-- Nav do perfil -->
+    <nav class="profile-nav">
+      <div class="container profile-nav__inner">
+        <div class="logo" style="cursor:default;">
+          <div class="logo__icon-wrap">
+            <i class="ti ti-heart-rate-monitor"></i>
+          </div>
+          <div class="logo__wordmark">Pet<span>Saúde</span></div>
+        </div>
+        <button class="btn-primary" onclick="goEventForm(null,'profile')">
+          <i class="ti ti-plus"></i> Registar evento
+        </button>
+      </div>
+    </nav>
+
+    <!-- Conteúdo do perfil -->
+    <div class="profile-body">
+      <div class="container">
+
+        <!-- Identidade do animal -->
+        <div class="profile-identity">
+          <div class="profile-identity__photo" id="profile-photo">🐶</div>
+          <div class="profile-identity__info">
+            <div class="profile-identity__name" id="profile-name">—</div>
+            <div class="profile-identity__tags" id="profile-tags">
+              <!-- preenchido via JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Card de estado de saúde — preenchido por renderAIHealthSummary() -->
+        <div id="ai-health-card"></div>
+
+        <!-- Secção: Lembretes emocionais (próximos eventos) -->
+        <div class="profile-section">
+          <div class="profile-section__header">
+            <span class="profile-section__title">Próximos eventos</span>
+            <span class="profile-section__badge" id="upcoming-badge">0</span>
+          </div>
+          <div id="upcoming-list">
+            <!-- preenchido por renderAIReminders() -->
+          </div>
+        </div>
+
+        <!-- Secção: Historial recente -->
+        <div class="profile-section">
+          <div class="profile-section__header">
+            <span class="profile-section__title">Historial recente</span>
+            <div style="display:flex; align-items:center; gap:10px;">
+              <span class="profile-section__badge" id="history-badge">0</span>
+              <span id="history-see-all"></span>
+            </div>
+          </div>
+          <div id="history-list">
+            <div class="empty-state">
+              <div class="empty-state__icon"><i class="ti ti-notes" style="font-size:28px; color: var(--color-text-secondary); opacity:0.4;"></i></div>
+              <p class="empty-state__text">Ainda não há registos de saúde.</p>
+              <button class="btn-secondary" style="margin-top:12px; font-size:13px; padding:10px 18px;" onclick="goEventForm(null,'profile')">
+                <i class="ti ti-plus"></i> Registar primeiro evento
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Rodapé de teste — será removido na versão final -->
+    <div style="padding: 48px 0 32px; text-align: center;">
+      <div id="reset-confirm" style="display:none; margin-bottom: 10px; font-size: 13px; color: var(--color-text-secondary);">
+        Tens a certeza? Esta acção remove todos os dados de teste.
+        <span style="display:inline-flex; gap:8px; margin-left:8px; vertical-align:middle;">
+          <button
+            onclick="doReset()"
+            style="font-family:'DM Sans',sans-serif; font-size:12px; font-weight:600;
+                   padding:4px 12px; border-radius:8px; border:1.5px solid #E53E3E;
+                   background:#FFF0F0; color:#E53E3E; cursor:pointer;">
+            Sim, resetar
+          </button>
+          <button
+            onclick="document.getElementById('reset-confirm').style.display='none'"
+            style="font-family:'DM Sans',sans-serif; font-size:12px; font-weight:500;
+                   padding:4px 12px; border-radius:8px; border:1px solid var(--color-border);
+                   background:none; color:var(--color-text-secondary); cursor:pointer;">
+            Cancelar
+          </button>
+        </span>
+      </div>
+      <button
+        onclick="document.getElementById('reset-confirm').style.display='block'"
+        style="font-family:'DM Mono',monospace; font-size:11px; font-weight:400;
+               color:var(--color-text-secondary); opacity:0.5; background:none;
+               border:1px solid var(--color-border); border-radius:8px;
+               padding:6px 14px; cursor:pointer; letter-spacing:0.3px;
+               transition:opacity 0.15s ease;"
+        onmouseover="this.style.opacity='0.85'"
+        onmouseout="this.style.opacity='0.5'">
+        Resetar sessão de teste
+      </button>
+      <p style="margin-top: 8px; font-family:'DM Mono',monospace; font-size:10px;
+                color:var(--color-text-secondary); opacity:0.35; letter-spacing:0.2px;">
+        Esta opção existe apenas para testes. Será removida na versão final.
+      </p>
+    </div>
+
+  </div><!-- /screen-profile -->
+
+
+  <!-- Botão flutuante -->
+  <button class="fab" id="fab" onclick="goEventForm(null,'profile')" title="Registar evento">
+    <i class="ti ti-plus"></i>
+  </button>
+
+
+  <!-- Banner de conectividade offline -->
+  <div class="offline-banner" id="offline-banner">
+    <div class="container offline-banner__inner">
+      <i class="ti ti-wifi-off"></i>
+      <span id="offline-banner-text">Sem ligação. O historial continua acessível.</span>
+    </div>
+  </div>
+
+
+  <!-- ============================================================
+       MODAL DE EVENTO (FAB)
+       ============================================================ -->
+  <div class="event-modal-backdrop" id="event-modal-backdrop" onclick="closeEventModal(event)">
+    <div class="event-modal" onclick="event.stopPropagation()">
+      <div class="event-modal__header">
+        <span class="event-modal__title" id="event-modal-title">Novo evento de saúde</span>
+        <button class="event-modal__close" onclick="closeEventModal()">
+          <i class="ti ti-x"></i>
+        </button>
+      </div>
+
+      <div class="form" style="gap:14px;">
+
+        <div class="form__group">
+          <span class="form__label">Tipo</span>
+          <div class="event-type-options">
+            <button class="event-type-btn is-active" id="metype-vaccine" type="button" onclick="selectModalEventType('vaccine')">
+              <i class="ti ti-vaccine"></i> Vacina
+            </button>
+            <button class="event-type-btn" id="metype-deworm" type="button" onclick="selectModalEventType('deworm')">
+              <i class="ti ti-bug"></i> Desparasitação
+            </button>
+          </div>
+        </div>
+
+        <div class="form__group">
+          <label class="form__label" for="mev-name">Nome</label>
+          <input class="form__input" id="mev-name" type="text" placeholder="ex. Raiva, Múltipla..." autocomplete="off" />
+        </div>
+
+        <div class="form__group">
+          <label class="form__label" for="mev-date">Data de aplicação</label>
+          <input class="form__input" id="mev-date" type="date" />
+        </div>
+
+        <div class="form__group">
+          <label class="form__label" for="mev-next">
+            Próximo evento <span class="form__label-optional">(opcional)</span>
+          </label>
+          <input class="form__input" id="mev-next" type="date" />
+        </div>
+
+        <div class="form__group">
+          <label class="form__label" for="mev-notes">
+            Observações <span class="form__label-optional">(opcional)</span>
+          </label>
+          <textarea class="form__input" id="mev-notes" rows="2" placeholder="Reacções, lote, clínica..." style="resize:none; line-height:1.5;"></textarea>
+        </div>
+
+        <button class="btn-primary btn-primary--full" type="button" onclick="saveModalEvent()" style="margin-top:4px;">
+          Guardar evento <i class="ti ti-check"></i>
+        </button>
+
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ============================================================
+       ECRÃ 5: HISTORIAL COMPLETO
+       ============================================================ -->
+  <div id="screen-history">
+
+    <nav class="secondary-nav">
+      <div class="container secondary-nav__inner">
+        <div class="secondary-nav__left">
+          <button class="btn-back" onclick="showScreen('screen-profile')">
+            <i class="ti ti-arrow-left"></i> Voltar
+          </button>
+          <span class="secondary-nav__title" id="history-nav-title">Historial</span>
+        </div>
+        <button class="btn-primary" onclick="goEventForm(null,'history')">
+          <i class="ti ti-plus"></i> Adicionar evento
+        </button>
+      </div>
+    </nav>
+
+    <div class="history-body">
+      <div class="container" id="history-content">
+        <!-- preenchido via renderHistory() -->
+      </div>
+    </div>
+
+  </div><!-- /screen-history -->
+
+
+  <!-- ============================================================
+       ECRÃ 6: DETALHE DE EVENTO
+       ============================================================ -->
+  <div id="screen-detail">
+
+    <nav class="secondary-nav">
+      <div class="container secondary-nav__inner">
+        <div class="secondary-nav__left">
+          <button class="btn-back" onclick="showScreen('screen-history')">
+            <i class="ti ti-arrow-left"></i> Voltar
+          </button>
+          <span class="secondary-nav__title">Detalhe</span>
+        </div>
+      </div>
+    </nav>
+
+    <div class="detail-body">
+      <div class="container" style="max-width: 600px;">
+
+        <!-- Card de detalhe preenchido via renderDetail() -->
+        <div class="detail-card" id="detail-card-content">
+          <!-- conteúdo dinâmico -->
+        </div>
+
+        <!-- Acções -->
+        <div class="detail-actions">
+          <button class="btn-secondary" onclick="editCurrentEvent()">
+            <i class="ti ti-pencil"></i> Editar
+          </button>
+          <button class="btn-danger" onclick="openConfirmDelete()">
+            <i class="ti ti-trash"></i> Eliminar
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /screen-detail -->
+
+
+  <!-- Modal de confirmação de eliminação -->
+  <div class="confirm-modal-backdrop" id="confirm-delete-backdrop">
+    <div class="confirm-modal">
+      <div class="confirm-modal__icon">
+        <i class="ti ti-trash"></i>
+      </div>
+      <h2 class="confirm-modal__title">Eliminar este registo?</h2>
+      <p class="confirm-modal__text">Esta acção não pode ser desfeita. O evento será removido permanentemente da ficha.</p>
+      <div class="confirm-modal__actions">
+        <button class="btn-danger btn-danger--full" onclick="confirmDeleteEvent()">
+          <i class="ti ti-trash"></i> Sim, eliminar
+        </button>
+        <button class="btn-cancel" onclick="closeConfirmDelete()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ============================================================
+       ECRÃ 7: FORMULÁRIO DE EVENTO (criação e edição)
+       ============================================================ -->
+  <div id="screen-event-form">
+
+    <nav class="secondary-nav">
+      <div class="container secondary-nav__inner">
+        <div class="secondary-nav__left">
+          <button class="btn-back" id="ef-back-btn" onclick="efGoBack()">
+            <i class="ti ti-arrow-left"></i> Voltar
+          </button>
+          <span class="secondary-nav__title" id="ef-nav-title">Novo evento</span>
+        </div>
+      </div>
+    </nav>
+
+    <div class="event-form-body">
+      <div class="container">
+        <div class="event-form-card">
+
+          <div class="form" id="ef-form" style="gap:16px;">
+
+            <!-- 1. Tipo de evento -->
+            <div class="form__group">
+              <span class="form__label">Tipo de evento</span>
+              <div class="ef-type-options">
+
+                <button class="ef-type-card" id="ef-type-vaccine" type="button"
+                        onclick="efSelectType('vaccine')">
+                  <div class="ef-type-card__icon">
+                    <i class="ti ti-vaccine-bottle"></i>
+                  </div>
+                  Vacina
+                </button>
+
+                <button class="ef-type-card" id="ef-type-deworming" type="button"
+                        onclick="efSelectType('deworming')">
+                  <div class="ef-type-card__icon">
+                    <i class="ti ti-pill"></i>
+                  </div>
+                  Desparasitação
+                </button>
+
+              </div>
+              <!-- erro de tipo -->
+              <span class="form__error" id="ef-error-type">
+                <i class="ti ti-alert-circle"></i> Selecciona o tipo de evento
+              </span>
+            </div>
+
+            <div class="ef-divider"></div>
+
+            <!-- 2. Nome do evento -->
+            <div class="form__group">
+              <label class="form__label" for="ef-name">Nome do evento</label>
+              <input
+                class="form__input"
+                id="ef-name"
+                type="text"
+                placeholder="ex: Raiva, Antiparasitário interno"
+                autocomplete="off"
+              />
+              <span class="form__error" id="ef-error-name">
+                <i class="ti ti-alert-circle"></i> O nome é obrigatório
+              </span>
+            </div>
+
+            <!-- 3. Data de aplicação -->
+            <div class="form__group">
+              <label class="form__label" for="ef-applied">Data de aplicação</label>
+              <input
+                class="form__input"
+                id="ef-applied"
+                type="date"
+              />
+              <span class="form__error" id="ef-error-applied">
+                <i class="ti ti-alert-circle"></i> A data de aplicação é obrigatória
+              </span>
+            </div>
+
+            <div class="ef-divider"></div>
+
+            <!-- 4. Próximo evento (opcional) -->
+            <div class="form__group">
+              <label class="form__label" for="ef-next">
+                Próximo evento <span class="form__label-optional">(opcional)</span>
+              </label>
+              <input
+                class="form__input"
+                id="ef-next"
+                type="date"
+              />
+            </div>
+
+            <!-- 5. Observações (opcional) -->
+            <div class="form__group">
+              <label class="form__label" for="ef-notes">
+                Observações <span class="form__label-optional">(opcional)</span>
+              </label>
+              <textarea
+                class="form__input"
+                id="ef-notes"
+                rows="3"
+                placeholder="Alguma nota relevante? ex: sem reacções adversas"
+                style="resize:none; line-height:1.55;"
+              ></textarea>
+            </div>
+
+            <!-- Botão de guardar -->
+            <button class="btn-primary ef-submit" id="ef-submit-btn"
+                    type="button" onclick="efSave()">
+              Guardar evento <i class="ti ti-check"></i>
+            </button>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /screen-event-form -->
+
+
+  <!-- Toast de confirmação -->
+  <div class="toast" id="toast">
+    <i class="ti ti-circle-check toast__icon"></i>
+    <span class="toast__text" id="toast-text">Evento guardado.</span>
+  </div>
+
+
+  <!-- Overlay de loading -->
+  <div class="loading-overlay" id="loading-overlay">
+    <div class="loading-spinner"></div>
+    <p class="loading-text" id="loading-text">A criar a ficha...</p>
+  </div>
+
+
+  <script>
+    /* ================================================================
+       ESTADO DA APLICAÇÃO
+       ================================================================ */
+    let currentSpecies   = 'dog';
+    let currentEventType = 'vaccine';
+    let currentModalType = 'vaccine';
+    let currentChoice    = null;
+    let petPhotoDataUrl  = null;
+
+    /* ================================================================
+       UTILITÁRIOS
+       ================================================================ */
+
+    function showScreen(id) {
+      ['screen-home','screen-register','screen-step2','screen-profile',
+       'screen-history','screen-detail','screen-event-form']
+        .forEach(function(s) {
+          var el = document.getElementById(s);
+          el.style.display = 'none';
+          el.classList.remove('is-visible');
+        });
+      var target = document.getElementById(id);
+      var flexScreens = ['screen-register','screen-step2'];
+      target.style.display = flexScreens.indexOf(id) > -1 ? 'flex' : 'block';
+      requestAnimationFrame(function() { target.classList.add('is-visible'); });
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      document.getElementById('fab').classList.toggle('is-visible', id === 'screen-profile');
+    }
+
+    function calcAge(dobStr) {
+      if (!dobStr) return null;
+      var dob    = new Date(dobStr);
+      var now    = new Date();
+      var years  = now.getFullYear() - dob.getFullYear();
+      var months = now.getMonth() - dob.getMonth();
+      if (months < 0) { years--; months += 12; }
+      if (years >= 1) return years === 1 ? '1 ano' : years + ' anos';
+      return months <= 1 ? '1 mês' : months + ' meses';
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return '';
+      var p = dateStr.split('-');
+      return p[2] + '/' + p[1] + '/' + p[0];
+    }
+
+    function getAnimal() {
+      try { return JSON.parse(localStorage.getItem('petsaude_pet') || 'null'); }
+      catch(e) { return null; }
+    }
+
+    function saveAnimal(obj) {
+      localStorage.setItem('petsaude_pet', JSON.stringify(obj));
+    }
+
+    function getEvents() {
+      try { return JSON.parse(localStorage.getItem('petsaude_events') || '[]'); }
+      catch(e) { return []; }
+    }
+
+    function saveEvents(arr) {
+      localStorage.setItem('petsaude_events', JSON.stringify(arr));
+    }
+
+    /* ================================================================
+       NAVEGAÇÃO
+       ================================================================ */
+
+    function goHome() {
+      // Limpar pet guardado para recomeçar do zero
+      // (comentar as duas linhas abaixo se quiser persistência entre sessões)
+      // localStorage.removeItem('petsaude_pet');
+      // localStorage.removeItem('petsaude_events');
+      showScreen('screen-home');
+    }
+
+    function goRegister() {
+      document.getElementById('pet-name').value = '';
+      document.getElementById('pet-dob').value  = '';
+      document.getElementById('pet-name').classList.remove('has-error');
+      document.getElementById('error-name').classList.remove('is-visible');
+      petPhotoDataUrl = null;
+      var preview = document.getElementById('photo-preview');
+      preview.src = '';
+      preview.classList.remove('is-visible');
+      var avatar = document.getElementById('photo-avatar');
+      avatar.style.display = '';
+      avatar.textContent = '🐶';
+      selectSpecies('dog');
+      showScreen('screen-register');
+    }
+
+    function goStep1() {
+      showScreen('screen-register');
+    }
+
+    /* ================================================================
+       PASSO 1 — ESPÉCIE, FOTO, VALIDAÇÃO
+       ================================================================ */
+
+    function selectSpecies(species) {
+      currentSpecies = species;
+      document.getElementById('card-dog').classList.toggle('is-active', species === 'dog');
+      document.getElementById('card-cat').classList.toggle('is-active', species === 'cat');
+      var preview = document.getElementById('photo-preview');
+      if (!preview.classList.contains('is-visible')) {
+        document.getElementById('photo-avatar').textContent = species === 'dog' ? '🐶' : '🐱';
+      }
+    }
+
+    function handlePhotoUpload(event) {
+      var file = event.target.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        petPhotoDataUrl = e.target.result;
+        var preview = document.getElementById('photo-preview');
+        preview.src = petPhotoDataUrl;
+        preview.classList.add('is-visible');
+        document.getElementById('photo-avatar').style.display = 'none';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function handleContinue() {
+      var nameInput = document.getElementById('pet-name');
+      var nameError = document.getElementById('error-name');
+      var nameValue = nameInput.value.trim();
+
+      if (!nameValue) {
+        nameInput.classList.add('has-error');
+        nameError.classList.add('is-visible');
+        nameInput.focus();
+        return;
+      }
+      nameInput.classList.remove('has-error');
+      nameError.classList.remove('is-visible');
+
+      // Preencher mini-ficha do passo 2
+      document.getElementById('step2-name').textContent    = nameValue;
+      document.getElementById('step2-species').textContent = currentSpecies === 'dog' ? 'Cão' : 'Gato';
+      var avatarEl = document.getElementById('step2-avatar');
+      if (petPhotoDataUrl) {
+        avatarEl.innerHTML = '<img src="' + petPhotoDataUrl + '" alt="foto" />';
+      } else {
+        avatarEl.textContent = currentSpecies === 'dog' ? '🐶' : '🐱';
+      }
+
+      // Resetar escolha
+      currentChoice = null;
+      document.getElementById('choice-now').classList.remove('is-active');
+      document.getElementById('choice-later').classList.remove('is-active');
+      document.getElementById('event-form-wrap').classList.remove('is-visible');
+
+      showScreen('screen-step2');
+    }
+
+    /* ================================================================
+       PASSO 2 — ESCOLHA E EVENTO
+       ================================================================ */
+
+    function selectChoice(choice) {
+      currentChoice = choice;
+      document.getElementById('choice-now').classList.toggle('is-active', choice === 'now');
+      document.getElementById('choice-later').classList.toggle('is-active', choice === 'later');
+      document.getElementById('event-form-wrap').classList.toggle('is-visible', choice === 'now');
+    }
+
+    function selectEventType(type) {
+      currentEventType = type;
+      document.getElementById('etype-vaccine').classList.toggle('is-active', type === 'vaccine');
+      document.getElementById('etype-deworm').classList.toggle('is-active', type === 'deworm');
+    }
+
+    function handleCreateFicha() {
+      var petName  = document.getElementById('pet-name').value.trim();
+      var petDob   = document.getElementById('pet-dob').value;
+      var petBreed = document.getElementById('pet-breed').value.trim();
+
+      saveAnimal({ name: petName, species: currentSpecies, dob: petDob, breed: petBreed, photo: petPhotoDataUrl });
+
+      if (currentChoice === 'now') {
+        var evName = document.getElementById('ev-name').value.trim();
+        var evDate = document.getElementById('ev-date').value;
+        if (evName || evDate) {
+          var events = getEvents();
+          events.push({
+            id:    Date.now(),
+            type:  currentEventType,
+            name:  evName || (currentEventType === 'vaccine' ? 'Vacina' : 'Desparasitação'),
+            date:  evDate,
+            next:  document.getElementById('ev-next').value,
+            notes: document.getElementById('ev-notes').value.trim()
+          });
+          saveEvents(events);
+        }
+      }
+
+      var overlay = document.getElementById('loading-overlay');
+      document.getElementById('loading-text').textContent = 'A criar a ficha de ' + petName + '...';
+      overlay.classList.add('is-visible');
+
+      setTimeout(function() {
+        overlay.classList.remove('is-visible');
+        renderProfile();
+        showScreen('screen-profile');
+      }, 1500);
+    }
+
+    /* ================================================================
+       PERFIL — RENDERIZAÇÃO
+       ================================================================ */
+
+    function renderProfile() {
+      var pet    = getAnimal();
+      var events = getEvents();
+      if (!pet) { navigateTo('welcome'); return; }
+
+      // Foto / avatar
+      var photoEl = document.getElementById('profile-photo');
+      if (pet.photo) {
+        photoEl.innerHTML = '<img src="' + pet.photo + '" alt="foto" />';
+      } else {
+        photoEl.textContent = pet.species === 'dog' ? '🐶' : '🐱';
+      }
+
+      // Nome
+      document.getElementById('profile-name').textContent = pet.name;
+
+      // Tags
+      var age = calcAge(pet.dob);
+      var speciesLabel = pet.species === 'dog' ? 'Cão' : 'Gato';
+      var tagsHTML = '<span class="profile-tag profile-tag--species">' + speciesLabel + '</span>';
+      if (pet.breed) tagsHTML += '<span class="profile-tag profile-tag--breed">' + pet.breed + '</span>';
+      if (age)       tagsHTML += '<span class="profile-tag profile-tag--age">' + age + '</span>';
+      document.getElementById('profile-tags').innerHTML = tagsHTML;
+
+      // Card de saúde IA — chamado separadamente para gerir estados async
+      renderAIHealthSummary(pet, events);
+
+      // Lembretes emocionais IA
+      renderAIReminders(pet, events);
+
+      // Historial
+      var sorted = events.slice().sort(function(a,b) { return (b.date || '').localeCompare(a.date || ''); });
+      document.getElementById('history-badge').textContent = sorted.length;
+      // Mostrar link "Ver tudo" apenas quando há eventos
+      var verTudoHTML = sorted.length > 0
+        ? '<button class="btn-back" style="color:var(--color-accent); font-weight:600;" onclick="goHistory()">Ver tudo <i class="ti ti-arrow-right"></i></button>'
+        : '';
+      document.getElementById('history-see-all').innerHTML = verTudoHTML;
+      document.getElementById('history-list').innerHTML = sorted.length === 0
+        ? '<div class="empty-state"><div class="empty-state__icon"><i class="ti ti-notes" style="font-size:28px; color: var(--color-text-secondary); opacity:0.4;"></i></div><p class="empty-state__text">Ainda não há registos de saúde.</p><button class="btn-secondary" style="margin-top:12px; font-size:13px; padding:10px 18px;" onclick="goEventForm(null,\'profile\')"><i class="ti ti-plus"></i> Registar primeiro evento</button></div>'
+        : sorted.slice(0, 3).map(function(e) { return eventRowHTML(e, false); }).join('');
+    }
+
+    function eventRowHTML(e, isUpcoming) {
+      var iconClass  = e.type === 'vaccine' ? 'event-row__icon--vaccine' : 'event-row__icon--deworm';
+      var icon       = e.type === 'vaccine' ? 'ti-vaccine' : 'ti-bug';
+      var typeClass  = e.type === 'vaccine' ? 'event-row__type--vaccine' : 'event-row__type--deworm';
+      var typeLabel  = e.type === 'vaccine' ? 'Vacina' : 'Desparasitação';
+
+      var urgTag = '';
+      if (isUpcoming && e.next) {
+        var diffDays = Math.ceil((new Date(e.next) - new Date()) / (1000 * 60 * 60 * 24));
+        if (diffDays <= 7) {
+          urgTag = '<span style="font-family:\'DM Mono\',monospace;font-size:10px;font-weight:500;'
+            + 'padding:2px 7px;border-radius:6px;margin-left:6px;background:#FFF0F0;color:#E53E3E;'
+            + 'text-transform:uppercase;letter-spacing:0.3px;">Esta semana</span>';
+        } else if (diffDays <= 30) {
+          urgTag = '<span style="font-family:\'DM Mono\',monospace;font-size:10px;font-weight:500;'
+            + 'padding:2px 7px;border-radius:6px;margin-left:6px;background:#FFF3E5;color:#E07A28;'
+            + 'text-transform:uppercase;letter-spacing:0.3px;">Em breve</span>';
+        }
+      }
+
+      var dateLabel = isUpcoming
+        ? (e.next ? 'Próximo: ' + formatDate(e.next) : '')
+        : (e.date ? formatDate(e.date) : '');
+
+      return '<div class="event-row">'
+        + '<div class="event-row__icon ' + iconClass + '"><i class="ti ' + icon + '"></i></div>'
+        + '<div class="event-row__info">'
+        + '<div class="event-row__name">' + (e.name || typeLabel) + urgTag + '</div>'
+        + '<div class="event-row__date">' + dateLabel + '</div>'
+        + '</div>'
+        + '<span class="event-row__type ' + typeClass + '">' + typeLabel + '</span>'
+        + '</div>';
+    }
+
+    /* ================================================================
+       MODAL DE EVENTO (FAB) — mantido para compatibilidade com
+       o Passo 2 do registo. O FAB e os botões do perfil/historial
+       agora navegam para o ecrã dedicado (goEventForm).
+       ================================================================ */
+
+    var editingEventId = null;
+
+    function openEventModal() {
+      // Redirige para o ecrã dedicado em modo criação
+      goEventForm(null, 'profile');
+    }
+
+    function closeEventModal(e) {
+      if (e && e.target !== document.getElementById('event-modal-backdrop')) return;
+      // Cancelar edição: NÃO apagar o evento — apenas fechar o modal
+      editingEventId = null;
+      document.getElementById('event-modal-backdrop').classList.remove('is-visible');
+    }
+
+    function selectModalEventType(type) {
+      currentModalType = type;
+      document.getElementById('metype-vaccine').classList.toggle('is-active', type === 'vaccine');
+      document.getElementById('metype-deworm').classList.toggle('is-active', type === 'deworm');
+    }
+
+    function saveModalEvent() {
+      var events = getEvents();
+      if (editingEventId !== null) {
+        events = events.filter(function(ev) { return ev.id != editingEventId; });
+      }
+      var newEv = {
+        id:    editingEventId !== null ? editingEventId : Date.now(),
+        type:  currentModalType,
+        name:  document.getElementById('mev-name').value.trim() || (currentModalType === 'vaccine' ? 'Vacina' : 'Desparasitação'),
+        date:  document.getElementById('mev-date').value,
+        next:  document.getElementById('mev-next').value,
+        notes: document.getElementById('mev-notes').value.trim()
+      };
+      events.push(newEv);
+      try { localStorage.setItem('petsaude_events', JSON.stringify(events)); }
+      catch(e) { showGlobalError('Algo correu mal ao guardar. Tenta novamente.'); return; }
+      editingEventId = null;
+      document.getElementById('event-modal-backdrop').classList.remove('is-visible');
+      renderProfile();
+      if (document.getElementById('screen-history').classList.contains('is-visible')) renderHistory();
+      if (document.getElementById('screen-detail').classList.contains('is-visible') && currentDetailId) renderDetail(currentDetailId);
+    }
+
+    /* ================================================================
+       HISTORIAL COMPLETO
+       ================================================================ */
+
+    var currentDetailId = null;   // id do evento em visualização
+
+    function goHistory() {
+      renderHistory();
+      showScreen('screen-history');
+    }
+
+    function renderHistory() {
+      var pet    = getAnimal();
+      var events = getEvents();
+
+      // Título da nav com nome do animal
+      if (pet) {
+        document.getElementById('history-nav-title').textContent = 'Historial de ' + pet.name;
+      }
+
+      var content = document.getElementById('history-content');
+
+      if (events.length === 0) {
+        content.innerHTML = '<div class="history-empty">'
+          + '<div class="history-empty__icon"><i class="ti ti-clipboard-list"></i></div>'
+          + '<p class="history-empty__title">Sem eventos registados ainda.</p>'
+          + '<p class="history-empty__sub">O primeiro registo é o passo mais importante.</p>'
+          + '<button class="btn-primary" style="margin-top:20px;" onclick="goEventForm(null,\'history\')">'
+          + '<i class="ti ti-plus"></i> Registar primeiro evento</button>'
+          + '</div>';
+        return;
+      }
+
+      var vaccines = events.filter(function(e) { return e.type === 'vaccine'; })
+                           .sort(function(a,b) { return (b.date || '').localeCompare(a.date || ''); });
+      var deworms  = events.filter(function(e) { return e.type !== 'vaccine'; })
+                           .sort(function(a,b) { return (b.date || '').localeCompare(a.date || ''); });
+
+      var html = '';
+
+      if (vaccines.length > 0) {
+        html += '<div class="history-group">'
+          + '<p class="history-group__title">Vacinas</p>'
+          + vaccines.map(function(e) { return historyCardHTML(e); }).join('')
+          + '</div>';
+      }
+
+      if (deworms.length > 0) {
+        html += '<div class="history-group">'
+          + '<p class="history-group__title">Desparasitações</p>'
+          + deworms.map(function(e) { return historyCardHTML(e); }).join('')
+          + '</div>';
+      }
+
+      content.innerHTML = html;
+    }
+
+    function historyCardHTML(e) {
+      var isVaccine  = e.type === 'vaccine';
+      var iconClass  = isVaccine ? 'history-card__icon--vaccine' : 'history-card__icon--deworm';
+      var iconName   = isVaccine ? 'ti-vaccine-bottle' : 'ti-pill';
+      var metaLine   = e.date ? 'Aplicado em ' + formatDate(e.date) : '';
+      var nextLine   = e.next ? '<div class="history-card__next">Próximo: ' + formatDate(e.next) + '</div>' : '';
+      var notesLine  = e.notes ? '<div class="history-card__notes">' + e.notes + '</div>' : '';
+
+      return '<div class="history-card" onclick="goDetail(' + e.id + ')">'
+        + '<div class="history-card__icon ' + iconClass + '"><i class="ti ' + iconName + '"></i></div>'
+        + '<div class="history-card__body">'
+        + '<div class="history-card__name">' + (e.name || (isVaccine ? 'Vacina' : 'Desparasitação')) + '</div>'
+        + '<div class="history-card__meta">' + metaLine + '</div>'
+        + nextLine
+        + notesLine
+        + '</div>'
+        + '<div class="history-card__arrow"><i class="ti ti-chevron-right"></i></div>'
+        + '</div>';
+    }
+
+    /* ================================================================
+       DETALHE DE EVENTO
+       ================================================================ */
+
+    function goDetail(id) {
+      currentDetailId = id;
+      renderDetail(id);
+      showScreen('screen-detail');
+    }
+
+    function renderDetail(id) {
+      var events = getEvents();
+      var e = null;
+      for (var i = 0; i < events.length; i++) {
+        if (events[i].id == id) { e = events[i]; break; }
+      }
+      if (!e) return;
+
+      var isVaccine  = e.type === 'vaccine';
+      var typeLabel  = isVaccine ? 'Vacina' : 'Desparasitação';
+      var badgeClass = isVaccine ? 'detail-type-badge--vaccine' : 'detail-type-badge--deworm';
+      var badgeIcon  = isVaccine ? 'ti-vaccine-bottle' : 'ti-pill';
+
+      // Urgência do próximo evento
+      var nextHTML = '';
+      if (e.next) {
+        var today    = new Date();
+        var nextDate = new Date(e.next);
+        var diffMs   = nextDate - today;
+        var diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+        var urgClass = '';
+        var urgTag   = '';
+
+        if (diffDays <= 7) {
+          urgClass = 'detail-row__value--urgent';
+          urgTag   = '<span class="detail-urgency-tag detail-urgency-tag--urgent">Esta semana</span>';
+        } else if (diffDays <= 30) {
+          urgClass = 'detail-row__value--soon';
+          urgTag   = '<span class="detail-urgency-tag detail-urgency-tag--soon">Em breve</span>';
+        }
+
+        nextHTML = '<div class="detail-row">'
+          + '<div class="detail-row__icon"><i class="ti ti-calendar-event"></i></div>'
+          + '<div class="detail-row__content">'
+          + '<div class="detail-row__label">Próximo evento</div>'
+          + '<div class="detail-row__value ' + urgClass + '">' + formatDate(e.next) + urgTag + '</div>'
+          + '</div></div>';
+      }
+
+      var notesHTML = '';
+      if (e.notes) {
+        notesHTML = '<div class="detail-row">'
+          + '<div class="detail-row__icon"><i class="ti ti-notes"></i></div>'
+          + '<div class="detail-row__content">'
+          + '<div class="detail-row__label">Observações</div>'
+          + '<div class="detail-row__value">' + e.notes + '</div>'
+          + '</div></div>';
+      }
+
+      document.getElementById('detail-card-content').innerHTML =
+          '<span class="detail-type-badge ' + badgeClass + '"><i class="ti ' + badgeIcon + '"></i>' + typeLabel + '</span>'
+        + '<h1 class="detail-title">' + (e.name || typeLabel) + '</h1>'
+        + (e.date
+            ? '<div class="detail-row">'
+              + '<div class="detail-row__icon"><i class="ti ti-calendar-check"></i></div>'
+              + '<div class="detail-row__content">'
+              + '<div class="detail-row__label">Aplicado em</div>'
+              + '<div class="detail-row__value">' + formatDate(e.date) + '</div>'
+              + '</div></div>'
+            : '')
+        + nextHTML
+        + notesHTML;
+    }
+
+    /* ================================================================
+       ELIMINAÇÃO DE EVENTO
+       ================================================================ */
+
+    function openConfirmDelete() {
+      document.getElementById('confirm-delete-backdrop').classList.add('is-visible');
+    }
+
+    function closeConfirmDelete() {
+      document.getElementById('confirm-delete-backdrop').classList.remove('is-visible');
+    }
+
+    function confirmDeleteEvent() {
+      removeEvent(currentDetailId);
+      closeConfirmDelete();
+      renderHistory();
+      renderProfile();
+      showScreen('screen-history');
+    }
+
+    function removeEvent(id) {
+      deleteEvent(id);
+      currentDetailId = null;
+    }
+
+    /* ================================================================
+       EDIÇÃO DE EVENTO — navega para o ecrã dedicado
+       ================================================================ */
+
+    function editCurrentEvent() {
+      goEventForm(currentDetailId, 'detail');
+    }
+
+    /* ================================================================
+       ECRÃ DE FORMULÁRIO DE EVENTO — lógica completa
+       ================================================================ */
+
+    var efEventId     = null;    // null = criação; id = edição
+    var efReturnTo    = 'profile'; // ecrã de retorno após guardar/cancelar
+    var efCurrentType = null;    // 'vaccine' | 'deworming' | null
+
+    // Gera um id único baseado no timestamp + random
+    function generateId() {
+      return Date.now() + Math.floor(Math.random() * 1000);
+    }
+
+    /**
+     * Navega para o formulário de evento.
+     * @param {number|null} eventId  — null para criação, id para edição
+     * @param {string}      returnTo — ecrã para onde voltar ('profile'|'history'|'detail')
+     */
+    function goEventForm(eventId, returnTo) {
+      efEventId  = eventId || null;
+      efReturnTo = returnTo || 'profile';
+
+      // Limpar erros e campos
+      efClearErrors();
+      efCurrentType = null;
+      document.getElementById('ef-type-vaccine').classList.remove('is-active');
+      document.getElementById('ef-type-deworming').classList.remove('is-active');
+      document.getElementById('ef-name').value    = '';
+      document.getElementById('ef-applied').value = '';
+      document.getElementById('ef-next').value    = '';
+      document.getElementById('ef-notes').value   = '';
+
+      if (efEventId !== null) {
+        // ---- MODO EDIÇÃO ----
+        var events = getEvents();
+        var ev = null;
+        for (var i = 0; i < events.length; i++) {
+          if (events[i].id == efEventId) { ev = events[i]; break; }
+        }
+        if (!ev) { efEventId = null; }
+        else {
+          document.getElementById('ef-nav-title').textContent    = 'Editar evento';
+          document.getElementById('ef-submit-btn').innerHTML     = 'Guardar alterações <i class="ti ti-check"></i>';
+          efSelectType(ev.type === 'vaccine' ? 'vaccine' : 'deworming');
+          document.getElementById('ef-name').value    = ev.name       || '';
+          document.getElementById('ef-applied').value = ev.appliedAt  || ev.date || '';
+          document.getElementById('ef-next').value    = ev.nextAt     || ev.next || '';
+          document.getElementById('ef-notes').value   = ev.notes      || '';
+        }
+      }
+
+      if (efEventId === null) {
+        // ---- MODO CRIAÇÃO ----
+        document.getElementById('ef-nav-title').textContent = 'Novo evento';
+        document.getElementById('ef-submit-btn').innerHTML  = 'Guardar evento <i class="ti ti-check"></i>';
+      }
+
+      showScreen('screen-event-form');
+    }
+
+    // Seleccionar tipo de evento
+    function efSelectType(type) {
+      efCurrentType = type;
+      document.getElementById('ef-type-vaccine').classList.toggle('is-active',   type === 'vaccine');
+      document.getElementById('ef-type-deworming').classList.toggle('is-active', type === 'deworming');
+      // Remover erro de tipo se estava visível
+      document.getElementById('ef-error-type').classList.remove('is-visible');
+    }
+
+    // Limpar todos os erros do formulário
+    function efClearErrors() {
+      ['ef-error-type','ef-error-name','ef-error-applied'].forEach(function(id) {
+        document.getElementById(id).classList.remove('is-visible');
+      });
+      ['ef-name','ef-applied'].forEach(function(id) {
+        document.getElementById(id).classList.remove('has-error');
+      });
+    }
+
+    // Voltar ao ecrã de origem
+    function efGoBack() {
+      if      (efReturnTo === 'history') showScreen('screen-history');
+      else if (efReturnTo === 'detail')  showScreen('screen-detail');
+      else                               showScreen('screen-profile');
+    }
+
+    // Guardar evento
+    function efSave() {
+      var hasError = false;
+
+      // Validar tipo
+      if (!efCurrentType) {
+        document.getElementById('ef-error-type').classList.add('is-visible');
+        hasError = true;
+      }
+
+      // Validar nome
+      var nameVal = document.getElementById('ef-name').value.trim();
+      if (!nameVal) {
+        document.getElementById('ef-name').classList.add('has-error');
+        document.getElementById('ef-error-name').classList.add('is-visible');
+        hasError = true;
+      }
+
+      // Validar data de aplicação
+      var appliedVal = document.getElementById('ef-applied').value;
+      if (!appliedVal) {
+        document.getElementById('ef-applied').classList.add('has-error');
+        document.getElementById('ef-error-applied').classList.add('is-visible');
+        hasError = true;
+      }
+
+      if (hasError) return;
+
+      // Construir objecto
+      var now    = new Date().toISOString();
+      var nextVal  = document.getElementById('ef-next').value  || null;
+      var notesVal = document.getElementById('ef-notes').value.trim() || null;
+
+      var events = getEvents();
+
+      if (efEventId !== null) {
+        // Edição: substituir o evento existente
+        events = events.map(function(ev) {
+          if (ev.id == efEventId) {
+            return {
+              id:        ev.id,
+              type:      efCurrentType,
+              name:      nameVal,
+              appliedAt: appliedVal,
+              nextAt:    nextVal,
+              notes:     notesVal,
+              createdAt: ev.createdAt || now,
+              // aliases de compatibilidade com o código existente
+              date: appliedVal,
+              next: nextVal
+            };
+          }
+          return ev;
+        });
+      } else {
+        // Criação: adicionar novo evento
+        var newId = generateId();
+        events.push({
+          id:        newId,
+          type:      efCurrentType,
+          name:      nameVal,
+          appliedAt: appliedVal,
+          nextAt:    nextVal,
+          notes:     notesVal,
+          createdAt: now,
+          // aliases de compatibilidade com o código existente
+          date: appliedVal,
+          next: nextVal
+        });
+      }
+
+      saveEvents(events);
+      renderProfile();
+
+      // Toast de confirmação
+      var pet = getAnimal();
+      var petName = pet ? pet.name : 'a ficha';
+      showToast(nameVal + ' guardado na ficha de ' + petName + '.');
+
+      // Navegar para o perfil após 1.5 s
+      setTimeout(function() {
+        showScreen('screen-profile');
+      }, 1500);
+    }
+
+    /* ================================================================
+       TOAST DE CONFIRMAÇÃO
+       ================================================================ */
+
+    var toastTimer = null;
+
+    function showToast(message) {
+      var toast    = document.getElementById('toast');
+      var toastTxt = document.getElementById('toast-text');
+      toastTxt.textContent = message;
+      toast.classList.add('is-visible');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(function() {
+        toast.classList.remove('is-visible');
+      }, 2500);
+    }
+
+    /* ================================================================
+       CAMADA DE INTELIGÊNCIA ARTIFICIAL — via Netlify Function
+       Toda a comunicação com a IA passa por /.netlify/functions/ai.
+       A chave da API nunca aparece no browser.
+       ================================================================ */
+
+    /* --- Função base: chama a Netlify Function e devolve o texto --- */
+    async function callAI(tipo, animal, dados) {
+      try {
+        var body = Object.assign({ tipo: tipo, animal: animal }, dados);
+        var response = await fetch('/.netlify/functions/ai', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify(body)
+        });
+        var data = await response.json();
+        // texto: null significa que a função correu mas a IA não gerou conteúdo
+        return data.texto || null;
+      } catch(err) {
+        // Erro de rede ou resposta não-JSON — activar fallback no componente
+        console.error('[PetSaúde] Erro ao chamar a função AI:', err);
+        return null;
+      }
+    }
+
+    /* --- Utilitário de dias até à data --- */
+    function daysUntil(dateStr) {
+      if (!dateStr) return Infinity;
+      return Math.ceil((new Date(dateStr) - new Date()) / (1000 * 60 * 60 * 24));
+    }
+
+    /* --- Obter eventos pendentes (nextAt/next > hoje) --- */
+    function getPendingEvents() {
+      var today = new Date().toISOString().split('T')[0];
+      return getEvents()
+        .filter(function(e) {
+          var nd = e.nextAt || e.next;
+          return nd && nd > today;
+        })
+        .sort(function(a, b) {
+          var na = a.nextAt || a.next;
+          var nb = b.nextAt || b.next;
+          return na.localeCompare(nb);
+        });
+    }
+
+    /* ================================================================
+       COMPONENTE: RESUMO DE SAÚDE
+       ================================================================ */
+
+    async function renderAIHealthSummary(pet, events) {
+      var card = document.getElementById('ai-health-card');
+      if (!card) return;
+
+      // SEM EVENTOS: não chamar a IA, mostrar estado orientativo
+      if (!events || events.length === 0) {
+        card.className = 'ai-health-card ai-health-card--empty';
+        card.innerHTML =
+          '<div class="ai-health-card__empty-icon"><i class="ti ti-heart-rate-monitor"></i></div>'
+        + '<p class="ai-health-card__empty-text">Adiciona o primeiro evento de saúde para receber o resumo de '
+        + (pet.name || 'o teu animal') + '.</p>';
+        return;
+      }
+
+      // LOADING: skeleton animado enquanto aguarda
+      card.className = 'ai-health-card ai-health-card--loading';
+      card.innerHTML =
+          '<div class="skeleton ai-health-card__skeleton-label"></div>'
+        + '<div class="skeleton ai-health-card__skeleton-line1"></div>'
+        + '<div class="skeleton ai-health-card__skeleton-line2"></div>'
+        + '<p class="ai-health-card__loading-hint">A preparar o estado de ' + pet.name + '...</p>';
+
+      // Normalizar eventos para o formato que a Netlify Function espera
+      var eventosNormalizados = events.map(function(e) {
+        return {
+          type:      e.type,
+          name:      e.name      || '',
+          appliedAt: e.appliedAt || e.date || null,
+          nextAt:    e.nextAt    || e.next || null
+        };
+      });
+
+      var text = await callAI('resumo', pet, { eventos: eventosNormalizados });
+
+      if (!text) {
+        // ERRO / FALLBACK
+        card.className = 'ai-health-card ai-health-card--error';
+        card.innerHTML =
+            '<p class="ai-health-card__error-text">Neste momento não foi possível gerar o resumo. '
+          + 'O historial de ' + pet.name + ' está guardado e acessível.</p>'
+          + '<button class="btn-secondary" style="font-size:13px;padding:8px 16px;" '
+          + 'onclick="renderAIHealthSummary(getAnimal(), getEvents())">'
+          + '<i class="ti ti-refresh"></i> Tentar novamente</button>';
+        return;
+      }
+
+      // SUCESSO
+      card.className = 'ai-health-card ai-health-card--success';
+      card.innerHTML =
+          '<div class="ai-health-card__label"><i class="ti ti-sparkles"></i> Estado de saúde</div>'
+        + '<p class="ai-health-card__text">' + text + '</p>';
+    }
+
+    /* ================================================================
+       COMPONENTE: LEMBRETES EMOCIONAIS
+       ================================================================ */
+
+    async function renderAIReminders(pet, events) {
+      var list  = document.getElementById('upcoming-list');
+      var badge = document.getElementById('upcoming-badge');
+      if (!list) return;
+
+      var pending = getPendingEvents();
+      if (badge) badge.textContent = pending.length;
+
+      // TODOS EM DIA: sem eventos futuros
+      if (pending.length === 0) {
+        list.innerHTML =
+          '<div class="reminders-all-ok">'
+        + '<div class="reminders-all-ok__icon"><i class="ti ti-heart"></i></div>'
+        + '<div><p class="reminders-all-ok__title">Tudo em dia.</p>'
+        + '<p class="reminders-all-ok__sub">Nenhum evento próximo para ' + pet.name + '.</p></div>'
+        + '</div>';
+        return;
+      }
+
+      // Criar todos os cards com skeleton imediatamente, sem esperar pela IA
+      list.innerHTML = pending.map(function(e, idx) {
+        var nd        = e.nextAt || e.next;
+        var days      = daysUntil(nd);
+        var isVaccine = e.type === 'vaccine';
+        var iconCls   = isVaccine ? 'reminder-card__icon--vaccine' : 'reminder-card__icon--deworm';
+        var iconName  = isVaccine ? 'ti-vaccine-bottle' : 'ti-pill';
+
+        var badgeCls, badgeTxt;
+        if      (days <= 7)  { badgeCls = 'reminder-badge--urgent';  badgeTxt = 'Esta semana'; }
+        else if (days <= 30) { badgeCls = 'reminder-badge--soon';    badgeTxt = 'Em breve'; }
+        else                 { badgeCls = 'reminder-badge--neutral'; badgeTxt = 'em ' + days + ' dias'; }
+
+        return '<div class="reminder-card" id="reminder-card-' + idx + '">'
+          + '<div class="reminder-card__header">'
+          + '<div class="reminder-card__icon ' + iconCls + '"><i class="ti ' + iconName + '"></i></div>'
+          + '<span class="reminder-card__name">' + (e.name || (isVaccine ? 'Vacina' : 'Desparasitação')) + '</span>'
+          + '<span class="reminder-badge ' + badgeCls + '">' + badgeTxt + '</span>'
+          + '</div>'
+          + '<div class="reminder-card__divider"></div>'
+          + '<div class="reminder-card__body" id="reminder-body-' + idx + '">'
+          + '<div class="skeleton reminder-skeleton-line" style="width:95%"></div>'
+          + '<div class="skeleton reminder-skeleton-line" style="width:75%"></div>'
+          + '</div>'
+          + '</div>';
+      }).join('');
+
+      // Disparar todos os pedidos em paralelo com Promise.all
+      var promessas = pending.map(function(e, idx) {
+        var nd        = e.nextAt || e.next;
+        var isVaccine = e.type === 'vaccine';
+        var eventName = e.name || (isVaccine ? 'Vacina' : 'Desparasitação');
+        var fallback  = (isVaccine ? 'Vacina' : 'Desparasitação') + ' "' + eventName
+          + '" de ' + pet.name + ' previsto para ' + formatDate(nd) + '.';
+
+        // Normalizar o evento para o formato esperado pela Netlify Function
+        var eventoNormalizado = {
+          type:  e.type,
+          name:  eventName,
+          nextAt: nd
+        };
+
+        return callAI('lembrete', pet, { evento: eventoNormalizado })
+          .then(function(text) {
+            var bodyEl = document.getElementById('reminder-body-' + idx);
+            if (bodyEl) bodyEl.textContent = text || fallback;
+          });
+      });
+
+      // Aguardar todos em paralelo (sem bloquear uns aos outros)
+      Promise.all(promessas);
+    }
+
+    /* ================================================================
+       RESET DE SESSÃO DE TESTE
+       ================================================================ */
+    function doReset() {
+      localStorage.removeItem('petsaude_pet');
+      localStorage.removeItem('petsaude_animal');
+      localStorage.removeItem('petsaude_events');
+      navigateTo('welcome');
+    }
+
+    /* ================================================================
+       CAMADA DE ROBUSTEZ
+       ================================================================ */
+
+    /* --- Funções centralizadas de acesso a dados ---
+       Todo o acesso a localStorage passa por aqui.
+       Nunca aceder directamente a localStorage fora destas funções. */
+
+    function getAnimal() {
+      try {
+        var raw = localStorage.getItem('petsaude_pet') || localStorage.getItem('petsaude_animal');
+        return raw ? JSON.parse(raw) : null;
+      } catch(e) { return null; }
+    }
+
+    function saveAnimal(obj) {
+      try { localStorage.setItem('petsaude_pet', JSON.stringify(obj)); }
+      catch(e) { showGlobalError('Não foi possível guardar os dados. O teu browser pode estar sem espaço.'); }
+    }
+
+    function getEvents() {
+      try { return JSON.parse(localStorage.getItem('petsaude_events') || '[]'); }
+      catch(e) { return []; }
+    }
+
+    function saveEvent(ev) {
+      try {
+        var events = getEvents();
+        var idx = events.findIndex(function(e) { return e.id == ev.id; });
+        if (idx > -1) { events[idx] = ev; } else { events.push(ev); }
+        localStorage.setItem('petsaude_events', JSON.stringify(events));
+      } catch(e) {
+        showGlobalError('Algo correu mal ao guardar. Tenta novamente.');
+      }
+    }
+
+    function deleteEvent(id) {
+      try {
+        var events = getEvents().filter(function(e) { return e.id != id; });
+        localStorage.setItem('petsaude_events', JSON.stringify(events));
+      } catch(e) {
+        showGlobalError('Não foi possível eliminar o registo. Tenta novamente.');
+      }
+    }
+
+    /* --- Protecção de sessão ---
+       Chamar no início de cada ecrã que depende de dados do animal. */
+    function requireAnimal() {
+      if (!getAnimal()) {
+        navigateTo('welcome');
+        return false;
+      }
+      return true;
+    }
+
+    /* --- Ponto único de navegação --- */
+    function navigateTo(destination) {
+      switch(destination) {
+        case 'welcome':
+          showScreen('screen-home');
+          break;
+        case 'dashboard':
+          if (!requireAnimal()) return;
+          renderProfile();
+          showScreen('screen-profile');
+          break;
+        case 'history':
+          if (!requireAnimal()) return;
+          renderHistory();
+          showScreen('screen-history');
+          break;
+        case 'detail':
+          if (!requireAnimal()) return;
+          showScreen('screen-detail');
+          break;
+        case 'event-form':
+          if (!requireAnimal()) return;
+          showScreen('screen-event-form');
+          break;
+        default:
+          showScreen('screen-' + destination);
+      }
+    }
+
+    /* --- Erro global --- */
+    function showGlobalError(message) {
+      var toast    = document.getElementById('toast');
+      var toastTxt = document.getElementById('toast-text');
+      toast.classList.add('toast--error');
+      toastTxt.textContent = message || 'Ocorreu um erro inesperado. Tenta recarregar a página.';
+      toast.classList.add('is-visible');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(function() {
+        toast.classList.remove('is-visible');
+        toast.classList.remove('toast--error');
+      }, 3000);
+    }
+
+    /* --- Banner offline --- */
+    function setOfflineBanner(isOffline) {
+      var banner = document.getElementById('offline-banner');
+      var pet    = getAnimal();
+      if (!banner) return;
+      if (isOffline) {
+        var name = (pet && pet.name) ? pet.name : 'o teu animal';
+        document.getElementById('offline-banner-text').textContent =
+          'Sem ligação. O historial de ' + name + ' continua acessível.';
+        banner.classList.add('is-visible');
+        // Desactivar componentes de IA visualmente
+        var aiCard = document.getElementById('ai-health-card');
+        if (aiCard) {
+          aiCard.className = 'ai-health-card ai-health-card--error';
+          aiCard.innerHTML =
+            '<p class="ai-health-card__error-text">Resumo indisponível sem ligação.</p>';
+        }
+      } else {
+        banner.classList.remove('is-visible');
+      }
+    }
+
+    /* --- Eventos de conectividade --- */
+    window.addEventListener('offline', function() {
+      setOfflineBanner(true);
+    });
+
+    window.addEventListener('online', function() {
+      setOfflineBanner(false);
+      showToast('Ligação restabelecida.');
+      var pet = getAnimal();
+      if (pet && document.getElementById('screen-profile').classList.contains('is-visible')) {
+        renderAIHealthSummary(pet, getEvents());
+        renderAIReminders(pet, getEvents());
+      }
+    });
+
+    /* ================================================================
+       INICIALIZAÇÃO ÚNICA DA APLICAÇÃO
+       Único ponto de entrada. Remove inicializações duplicadas anteriores.
+       ================================================================ */
+    document.addEventListener('DOMContentLoaded', function() {
+
+      /* — Limpar erro do nome do animal ao escrever (Passo 1) — */
+      var nameInput = document.getElementById('pet-name');
+      if (nameInput) {
+        nameInput.addEventListener('input', function() {
+          if (nameInput.value.trim()) {
+            nameInput.classList.remove('has-error');
+            var errEl = document.getElementById('error-name');
+            if (errEl) errEl.classList.remove('is-visible');
+          }
+        });
+      }
+
+      /* — Limpar erros do formulário de evento ao corrigir — */
+      var efName = document.getElementById('ef-name');
+      if (efName) {
+        efName.addEventListener('input', function() {
+          if (efName.value.trim()) {
+            efName.classList.remove('has-error');
+            document.getElementById('ef-error-name').classList.remove('is-visible');
+          }
+        });
+      }
+      var efApplied = document.getElementById('ef-applied');
+      if (efApplied) {
+        efApplied.addEventListener('change', function() {
+          if (efApplied.value) {
+            efApplied.classList.remove('has-error');
+            document.getElementById('ef-error-applied').classList.remove('is-visible');
+          }
+        });
+      }
+
+      /* — Verificar conectividade inicial — */
+      if (!navigator.onLine) { setOfflineBanner(true); }
+
+      /* — Arranque: único ponto de decisão — */
+      var pet = getAnimal();
+      if (pet) {
+        navigateTo('dashboard');
+        document.getElementById('fab').classList.add('is-visible');
+      } else {
+        navigateTo('welcome');
+      }
+    });
+  </script>
+
+</body>
+</html>
